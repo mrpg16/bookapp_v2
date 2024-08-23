@@ -2,22 +2,32 @@ package prod.bookapp.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class Config {
+
+    private static final String LOGIN_URL = "/login";
+    private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationSuccessHandlerBasic customAuthenticationSuccessHandlerBasic;
+
+    public Config(AuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationSuccessHandlerBasic customAuthenticationSuccessHandlerBasic) {
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
+        this.customAuthenticationSuccessHandlerBasic = customAuthenticationSuccessHandlerBasic;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,7 +47,18 @@ public class Config {
                         .requestMatchers(antMatcher("/timeslot/free")).permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults())
+                .oauth2Login(oauth2LoginConfigurer ->
+                        oauth2LoginConfigurer
+                                .successHandler(customAuthenticationSuccessHandler)
+                                .loginPage(LOGIN_URL)
+                                .permitAll()
+                )
+                .formLogin(formLoginConfigurer ->
+                        formLoginConfigurer
+                                .successHandler(customAuthenticationSuccessHandlerBasic)
+                                .loginPage(LOGIN_URL)
+                                .permitAll())
+                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
