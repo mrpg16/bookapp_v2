@@ -36,7 +36,7 @@ public class UserService {
     public String registerUser(UserRegisterDTO userRegisterDTO, HttpServletRequest request) {
         var email = userRegisterDTO.getEmail();
         var password = userRegisterDTO.getPassword();
-        if(email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             return "Invalid email or password";
         }
         User user = userRepository.findByEmailAndProvider(email, "basic");

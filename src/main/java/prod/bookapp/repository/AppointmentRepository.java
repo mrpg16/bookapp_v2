@@ -13,6 +13,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAllByWorker(User worker);
 
     List<Appointment> findAllByWorkerAndDate(User worker, LocalDate date);
+
     List<Appointment> findAllByWorkerAndDateAndStatusIsNot(User worker, LocalDate date, String status);
 
     List<Appointment> findAllByClientAndDate(User client, LocalDate date);

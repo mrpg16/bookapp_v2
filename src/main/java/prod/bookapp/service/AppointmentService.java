@@ -95,9 +95,9 @@ public class AppointmentService {
     }
 
     @Transactional
-    public String confirm(Long id, Authentication authentication){
+    public String confirm(Long id, Authentication authentication) {
         Appointment app = appointmentRepository.findByIdAndWorkerAndStatus(id, getAuthUser(authentication), Enums.APPOINTMENT_STATUS_UNCONFIRMED.getValue());
-        if(app == null){
+        if (app == null) {
             return "Not found";
         }
         app.setStatus(Enums.APPOINTMENT_STATUS_CONFIRMED.getValue());
@@ -106,9 +106,9 @@ public class AppointmentService {
     }
 
     @Transactional
-    public String reject(Long id, Authentication authentication){
+    public String reject(Long id, Authentication authentication) {
         Appointment app = appointmentRepository.findByIdAndWorkerAndStatus(id, getAuthUser(authentication), Enums.APPOINTMENT_STATUS_UNCONFIRMED.getValue());
-        if(app == null){
+        if (app == null) {
             return "Not found";
         }
         app.setStatus(Enums.APPOINTMENT_STATUS_REJECTED.getValue());
