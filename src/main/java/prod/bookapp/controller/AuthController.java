@@ -16,14 +16,16 @@ public class AuthController {
     }
 
     @GetMapping("/isAuthenticated")
-    public boolean isAuthenticated() {
-        Authentication auth = getAuth();
-        return auth instanceof OAuth2AuthenticationToken || auth instanceof UsernamePasswordAuthenticationToken;
+    public String isAuthenticated() {
+        return getAuth().toString();
     }
 
     @GetMapping("/type")
     public String getAuthType() {
         Authentication auth = getAuth();
+        if (auth == null) {
+            return "not authenticated";
+        }
         if (auth instanceof OAuth2AuthenticationToken) {
             return "oauth2";
         }
@@ -33,3 +35,4 @@ public class AuthController {
         return "not authenticated";
     }
 }
+//TODO HANDLE WRONG PASSWORD AUTH
