@@ -9,11 +9,10 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProposalViewDTO {
-    private Long id;
+public class ProposalCreateWVenueDTO {
     private String name;
     private String description;
     private int duration;
-    private VenueViewDTO venue;
+    private VenueCreateDTO venue;
     private boolean online;
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prod.bookapp.dto.ProposalCreateDTO;
+import prod.bookapp.dto.ProposalCreateWVenueDTO;
 import prod.bookapp.service.ProposalService;
 
 @RestController
@@ -27,5 +28,12 @@ public class ProposalController {
             @RequestBody ProposalCreateDTO proposalCreateDTO
     ) {
         return proposalService.create(proposalCreateDTO, getAuth());
+    }
+
+    @PostMapping("/wVenue")
+    public String createWithVenue(
+            @RequestBody ProposalCreateWVenueDTO proposalCreateWVenueDTO
+            ) {
+        return proposalService.createWithVenue(proposalCreateWVenueDTO, getAuth());
     }
 }

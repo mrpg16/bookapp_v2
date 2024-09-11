@@ -56,8 +56,9 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRepository.save(user);
         }
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/home";
+//        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/home";
+        String targetUrl = "http://localhost:5173/";
         response.sendRedirect(targetUrl);
-
+//TODO change redirect url domain to frontend not backend!
     }
 }

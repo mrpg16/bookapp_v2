@@ -27,7 +27,6 @@ public class WorkingHoursService {
         return (User) authentication.getPrincipal();
     }
 
-
     private Set<Integer> findDuplicatesByDayOfWeek(List<WorkingHoursCreateDTO> list) {
         return list.stream()
                 .collect(Collectors.groupingBy(WorkingHoursCreateDTO::getDayOfWeek, Collectors.counting()))
@@ -42,13 +41,21 @@ public class WorkingHoursService {
         return list.stream().anyMatch(x -> x.getStartTime().isAfter(x.getEndTime()) || x.getEndTime().equals(x.getStartTime()));
     }
 
-    @Transactional
-    public String createOrUpdate(List<WorkingHoursCreateDTO> whDTOList, Authentication authentication) {
+    private String validateWH(List<WorkingHoursCreateDTO> whDTOList) {
         if (hasTimeIssue(whDTOList)) {
             return "Sorry, but you have time issues";
         }
         if (!findDuplicatesByDayOfWeek(whDTOList).isEmpty()) {
             return "Sorry, but you have duplicate day";
+        }
+        return null;
+    }
+
+    @Transactional
+    public String createOrUpdate(List<WorkingHoursCreateDTO> whDTOList, Authentication authentication) {
+        var validationResult = validateWH(whDTOList);
+        if(validationResult != null){
+            return validationResult;
         }
         User owner = getAuthUser(authentication);
         List<WorkingHours> existedWH = workingHoursRepository.findByOwner(owner);

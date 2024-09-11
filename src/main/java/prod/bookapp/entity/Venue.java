@@ -11,20 +11,19 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "app_proposal")
-public class Proposal {
+@Table(name = "app_venue")
+public class Venue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
+    private String fullAddress;
+    private String phone;
     @ManyToOne()
     @JoinColumn(name = "owner_id")
     private User owner;
-    private String name;
-    private String description;
-    private int durationMin;
-    private boolean online;
-    @ManyToOne()
-    @JoinColumn(name = "venue_id")
-    private Venue venue;
     private boolean deleted = false;
+    private boolean online;
+    private String onlineProvider;
+    private String link;
 }

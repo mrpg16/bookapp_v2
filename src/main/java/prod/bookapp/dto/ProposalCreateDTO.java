@@ -13,4 +13,6 @@ public class ProposalCreateDTO {
     private String name;
     private String description;
     private int duration;
+    private long venueId;
+    private boolean online;
 }

@@ -4,16 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import prod.bookapp.dto.interfaces.VenueDTO;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProposalViewDTO {
+public class VenueViewDTO implements VenueDTO {
     private Long id;
     private String name;
-    private String description;
-    private int duration;
-    private VenueViewDTO venue;
+    private String fullAddress;
+    private String phone;
     private boolean online;
+    private String onlineProvider;
+    private String link;
 }
