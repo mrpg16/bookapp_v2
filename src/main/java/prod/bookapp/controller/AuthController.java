@@ -1,6 +1,7 @@
 package prod.bookapp.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,8 +21,13 @@ public class AuthController {
 
     @GetMapping("/isAuthenticated")
     public ResponseEntity<ApiResponse<Object>> isAuthenticated() {
-        var result = getAuth().toString();
-        return ResultWrapper.getResponse(result);
+        var result = getAuth();
+        System.out.println(result);
+        System.out.println(result.isAuthenticated());
+        if (!result.isAuthenticated() || result.getPrincipal().equals("anonymousUser")) {
+            return ResultWrapper.getResponse(false);
+        }
+        return ResultWrapper.getResponse(true);
     }
 
     @GetMapping("/type")

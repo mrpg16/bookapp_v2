@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prod.bookapp.dto.WorkingHoursCreateDTO;
+import prod.bookapp.dto.WorkingHoursViewDTO;
 import prod.bookapp.dto.converter.WorkingHoursViewDTOConverter;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.WorkingHours;
@@ -84,9 +85,9 @@ public class WorkingHoursService {
         return workingHoursRepository.findByOwnerAndDayOfWeek(user, dayOfWeek.getValue()).orElse(null);
     }
 
-    public List<WorkingHoursCreateDTO> getAll(Authentication authentication) {
+    public List<WorkingHoursViewDTO> getAll(Authentication authentication) {
         User owner = getAuthUser(authentication);
-        return workingHoursViewDTOConverter.convertToCreateDTO(workingHoursRepository.findAllByOwner(owner));
+        return workingHoursViewDTOConverter.convertToViewDTO(workingHoursRepository.findAllByOwner(owner));
     }
 
 

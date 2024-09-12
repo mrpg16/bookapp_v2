@@ -1,7 +1,7 @@
 package prod.bookapp.dto.converter;
 
 import org.springframework.stereotype.Component;
-import prod.bookapp.dto.WorkingHoursCreateDTO;
+import prod.bookapp.dto.WorkingHoursViewDTO;
 import prod.bookapp.entity.WorkingHours;
 
 import java.util.ArrayList;
@@ -9,18 +9,19 @@ import java.util.List;
 
 @Component
 public class WorkingHoursViewDTOConverter {
-    public WorkingHoursCreateDTO convertToCreateDTO(WorkingHours workingHours) {
-        WorkingHoursCreateDTO workingHoursCreateDTO = new WorkingHoursCreateDTO();
-        workingHoursCreateDTO.setStartTime(workingHours.getStartTime());
-        workingHoursCreateDTO.setEndTime(workingHours.getEndTime());
-        workingHoursCreateDTO.setDayOfWeek(workingHours.getDayOfWeek());
-        return workingHoursCreateDTO;
+    public WorkingHoursViewDTO convertToViewDTO(WorkingHours workingHours) {
+        WorkingHoursViewDTO workingHoursViewDTO = new WorkingHoursViewDTO();
+        workingHoursViewDTO.setId(workingHours.getId());
+        workingHoursViewDTO.setStartTime(workingHours.getStartTime());
+        workingHoursViewDTO.setEndTime(workingHours.getEndTime());
+        workingHoursViewDTO.setDayOfWeek(workingHours.getDayOfWeek());
+        return workingHoursViewDTO;
     }
-    public List<WorkingHoursCreateDTO> convertToCreateDTO(List<WorkingHours> workingHours){
-        List<WorkingHoursCreateDTO> workingHoursCreateDTOList = new ArrayList<>();
+    public List<WorkingHoursViewDTO> convertToViewDTO(List<WorkingHours> workingHours){
+        List<WorkingHoursViewDTO> workingHoursViewDTOList = new ArrayList<>();
         for (WorkingHours wh : workingHours) {
-            workingHoursCreateDTOList.add(this.convertToCreateDTO(wh));
+            workingHoursViewDTOList.add(this.convertToViewDTO(wh));
         }
-        return workingHoursCreateDTOList;
+        return workingHoursViewDTOList;
     }
 }
