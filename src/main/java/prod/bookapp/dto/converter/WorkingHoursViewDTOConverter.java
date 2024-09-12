@@ -17,7 +17,8 @@ public class WorkingHoursViewDTOConverter {
         workingHoursViewDTO.setDayOfWeek(workingHours.getDayOfWeek());
         return workingHoursViewDTO;
     }
-    public List<WorkingHoursViewDTO> convertToViewDTO(List<WorkingHours> workingHours){
+
+    public List<WorkingHoursViewDTO> convertToViewDTO(List<WorkingHours> workingHours) {
         List<WorkingHoursViewDTO> workingHoursViewDTOList = new ArrayList<>();
         for (WorkingHours wh : workingHours) {
             workingHoursViewDTOList.add(this.convertToViewDTO(wh));

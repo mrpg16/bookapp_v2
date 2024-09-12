@@ -3,28 +3,29 @@ package prod.bookapp.service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import prod.bookapp.dto.ProposalCreateDTO;
-import prod.bookapp.dto.ProposalCreateWVenueDTO;
-import prod.bookapp.dto.ProposalViewDTO;
-import prod.bookapp.dto.VenueCreateDTO;
-import prod.bookapp.dto.converter.VenueViewDTOConverter;
+import prod.bookapp.dto.*;
+import prod.bookapp.dto.converter.ProposalViewDTOConverter;
+import prod.bookapp.dto.interfaces.ProposalDTO;
+import prod.bookapp.dto.interfaces.VenueDTO;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
 import prod.bookapp.repository.ProposalRepository;
+
+import java.util.List;
 
 @Service
 public class ProposalService {
 
     private final ProposalRepository proposalRepository;
     private final VenueService venueService;
-    private final VenueViewDTOConverter venueViewDTOConverter;
+    private final ProposalViewDTOConverter proposalViewDTOConverter;
 
 
-    public ProposalService(ProposalRepository proposalRepository, VenueService venueService, VenueViewDTOConverter venueViewDTOConverter) {
+    public ProposalService(ProposalRepository proposalRepository, VenueService venueService, ProposalViewDTOConverter proposalViewDTOConverter) {
         this.proposalRepository = proposalRepository;
         this.venueService = venueService;
-        this.venueViewDTOConverter = venueViewDTOConverter;
+        this.proposalViewDTOConverter = proposalViewDTOConverter;
     }
 
     private User getAuthUser(Authentication authentication) {
@@ -32,45 +33,31 @@ public class ProposalService {
     }
 
 
-    private String validateProposalDTO(ProposalCreateDTO proposalCreateDTO, Venue venue) {
-        if (proposalCreateDTO.getName() == null || proposalCreateDTO.getName().isEmpty()) {
+    private String validateProposalDTO(ProposalDTO proposalDTO, Venue venue) {
+        if (proposalDTO.getName() == null || proposalDTO.getName().isEmpty()) {
             return "Error: Name cannot be empty";
         }
-        if (proposalCreateDTO.getDuration() <= 0) {
+        if (proposalDTO.getDuration() <= 0) {
             return "Error: Duration cannot be <= 0";
         }
-        if (proposalCreateDTO.isOnline() != venue.isOnline()) {
+        if (proposalDTO.isOnline() != venue.isOnline()) {
             return "Error: Venue type mismatch";
         }
         return null;
     }
 
-    private String validateProposalWithVenueDTO(ProposalCreateWVenueDTO proposalCreateWVenueDTO, VenueCreateDTO venueCreateDTO) {
-        if (proposalCreateWVenueDTO.isOnline() != venueCreateDTO.isOnline()) {
+    private String validateProposalWithVenueDTO(ProposalDTO proposalDTO, VenueDTO venueDTO) {
+        if (proposalDTO.isOnline() != venueDTO.isOnline()) {
             return "Error: Venue type mismatch";
         }
-        if (proposalCreateWVenueDTO.getName() == null || proposalCreateWVenueDTO.getName().isEmpty()) {
+        if (proposalDTO.getName() == null || proposalDTO.getName().isEmpty()) {
             return "Error: Name cannot be empty";
         }
-        if (proposalCreateWVenueDTO.getDuration() <= 0) {
+        if (proposalDTO.getDuration() <= 0) {
             return "Error: Duration cannot be <= 0";
         }
-        return venueService.validateVenue(venueCreateDTO);
+        return venueService.validateVenue(venueDTO);
     }
-
-    private String validateProposalWithVenueDTO(ProposalViewDTO proposalViewDTO) {
-        if (proposalViewDTO.isOnline() != proposalViewDTO.getVenue().isOnline()) {
-            return "Error: Venue type mismatch";
-        }
-        if (proposalViewDTO.getName() == null || proposalViewDTO.getName().isEmpty()) {
-            return "Error: Name cannot be empty";
-        }
-        if (proposalViewDTO.getDuration() <= 0) {
-            return "Error: Duration cannot be <= 0";
-        }
-        return venueService.validateVenue(proposalViewDTO.getVenue());
-    }
-
 
     @Transactional
     public String create(ProposalCreateDTO proposalCreateDTO, Authentication authentication) {
@@ -114,23 +101,39 @@ public class ProposalService {
     }
 
     @Transactional
-    public String update(ProposalViewDTO proposalViewDTO, Authentication authentication){
+    public String update(ProposalUpdateDTO proposalUpdateDTO, Authentication authentication) {
         User owner = getAuthUser(authentication);
-        Proposal proposal = getProposalByIdAndOwner(proposalViewDTO.getId(), owner);
-        if(proposal == null){
+        Proposal proposal = getProposalByIdAndOwner(proposalUpdateDTO.getId(), owner);
+        if (proposal == null) {
             return "Error: Proposal not found";
         }
-        var validationResult = validateProposalWithVenueDTO(proposalViewDTO);
-        if(validationResult != null){
+        Venue venue = venueService.findByIdAndOwnerAndDeletedFalse(proposalUpdateDTO.getVenueId(), owner);
+        if (venue == null) {
+            return "Error: Venue not found";
+        }
+
+        var validationResult = validateProposalDTO(proposalUpdateDTO, venue);
+        if (validationResult != null) {
             return validationResult;
         }
-        Venue venue = venueService.findByIdAndOwnerAndDeletedFalse(proposalViewDTO.getVenue().getId(), owner);
         proposal.setOwner(owner);
-        proposal.setName(proposalViewDTO.getName());
-        proposal.setDescription(proposalViewDTO.getDescription());
-        proposal.setDurationMin(proposalViewDTO.getDuration());
-        proposal.setOnline(proposalViewDTO.isOnline());
+        proposal.setName(proposalUpdateDTO.getName());
+        proposal.setDescription(proposalUpdateDTO.getDescription());
+        proposal.setDurationMin(proposalUpdateDTO.getDuration());
+        proposal.setOnline(proposalUpdateDTO.isOnline());
         proposal.setVenue(venue);
+        proposalRepository.save(proposal);
+        return proposal.getId().toString();
+    }
+
+    @Transactional
+    public String delete(long id, Authentication authentication){
+        User owner = getAuthUser(authentication);
+        Proposal proposal = proposalRepository.findByIdAndOwnerAndDeletedFalse(id, owner).orElse(null);
+        if(proposal==null){
+            return "Error: Proposal not found";
+        }
+        proposal.setDeleted(true);
         proposalRepository.save(proposal);
         return proposal.getId().toString();
     }
@@ -141,6 +144,21 @@ public class ProposalService {
     }
 
     public Proposal getProposalById(Long proposalId) {
-        return proposalRepository.findById(proposalId).orElse(null);
+        return proposalRepository.findByIdAndDeletedFalse(proposalId).orElse(null);
+    }
+
+    public ProposalViewDTO getById(long id, Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        Proposal proposal = proposalRepository.findByIdAndOwnerAndDeletedFalse(id, owner).orElse(null);
+        if(proposal==null){
+            return null;
+        }
+        return proposalViewDTOConverter.convertToProposalViewDTO(proposal);
+    }
+
+    public List<ProposalViewDTO> getAll(Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        List<Proposal> props = proposalRepository.findAllByOwnerAndDeletedFalse(owner);
+        return proposalViewDTOConverter.convertToProposalViewDTO(props);
     }
 }

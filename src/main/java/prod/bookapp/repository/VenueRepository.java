@@ -11,6 +11,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     Optional<Venue> findByIdAndOwnerAndDeletedFalse(Long id, User owner);
 
     List<Venue> findAllByOwnerAndDeletedFalse(User owner);
+
     List<Venue> findAllByOwnerAndDeletedFalseAndOnline(User owner, boolean online);
 
 }

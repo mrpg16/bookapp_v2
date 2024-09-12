@@ -124,7 +124,7 @@ public class VenueService {
     public VenueViewDTO getById(long venueId, Authentication authentication) {
         User owner = getAuthUser(authentication);
         Venue venue = findByIdAndOwnerAndDeletedFalse(venueId, owner);
-        if(venue == null){
+        if (venue == null) {
             return null;
         }
         return venueViewDTOConverter.convertToViewDTO(venue);

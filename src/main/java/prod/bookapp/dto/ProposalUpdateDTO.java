@@ -10,10 +10,11 @@ import prod.bookapp.dto.interfaces.ProposalDTO;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProposalCreateWVenueDTO implements ProposalDTO {
+public class ProposalUpdateDTO implements ProposalDTO {
+    private long id;
     private String name;
     private String description;
     private int duration;
-    private VenueCreateDTO venue;
+    private long venueId;
     private boolean online;
 }
