@@ -46,7 +46,7 @@ public class ProposalService {
     }
 
     private String validateProposalWithVenueDTO(ProposalCreateWVenueDTO proposalCreateWVenueDTO, VenueCreateDTO venueCreateDTO) {
-        if(proposalCreateWVenueDTO.isOnline() != venueCreateDTO.isOnline()) {
+        if (proposalCreateWVenueDTO.isOnline() != venueCreateDTO.isOnline()) {
             return "Error: Venue type mismatch";
         }
         if (proposalCreateWVenueDTO.getName() == null || proposalCreateWVenueDTO.getName().isEmpty()) {
@@ -59,7 +59,7 @@ public class ProposalService {
     }
 
     private String validateProposalWithVenueDTO(ProposalViewDTO proposalViewDTO) {
-        if(proposalViewDTO.isOnline() != proposalViewDTO.getVenue().isOnline()) {
+        if (proposalViewDTO.isOnline() != proposalViewDTO.getVenue().isOnline()) {
             return "Error: Venue type mismatch";
         }
         if (proposalViewDTO.getName() == null || proposalViewDTO.getName().isEmpty()) {
@@ -99,7 +99,7 @@ public class ProposalService {
     public String createWithVenue(ProposalCreateWVenueDTO proposalCreateWVenueDTO, Authentication authentication) {
         VenueCreateDTO venueCreateDTO = proposalCreateWVenueDTO.getVenue();
         var validationResult = validateProposalWithVenueDTO(proposalCreateWVenueDTO, venueCreateDTO);
-        if(validationResult != null){
+        if (validationResult != null) {
             return validationResult;
         }
         Proposal proposal = new Proposal();
@@ -113,28 +113,27 @@ public class ProposalService {
         return proposal.getId().toString();
     }
 
-//    @Transactional
-//    public String update(ProposalViewDTO proposalViewDTO, Authentication authentication){
-//        User owner = getAuthUser(authentication);
-//        Proposal proposal = getProposalByIdAndOwner(proposalViewDTO.getId(), owner);
-//        if(proposal == null){
-//            return "Proposal not found";
-//        }
-//        var validationResult = validateProposalWithVenueDTO(proposalViewDTO);
-//        if(validationResult != null){
-//            return validationResult;
-//        }
-//        Proposal proposalUpdate = new Proposal();
-//        proposalUpdate.setOwner(owner);
-//        proposalUpdate.setName(proposalViewDTO.getName());
-//        proposalUpdate.setDescription(proposalViewDTO.getDescription());
-//        proposalUpdate.setDurationMin(proposalViewDTO.getDuration());
-//        proposalUpdate.setOnline(proposalViewDTO.isOnline());
-//
-//        proposalUpdate.setVenue(proposalViewDTO.getVenue());
-//
-//        return null;
-//    }
+    @Transactional
+    public String update(ProposalViewDTO proposalViewDTO, Authentication authentication){
+        User owner = getAuthUser(authentication);
+        Proposal proposal = getProposalByIdAndOwner(proposalViewDTO.getId(), owner);
+        if(proposal == null){
+            return "Error: Proposal not found";
+        }
+        var validationResult = validateProposalWithVenueDTO(proposalViewDTO);
+        if(validationResult != null){
+            return validationResult;
+        }
+        Venue venue = venueService.findByIdAndOwnerAndDeletedFalse(proposalViewDTO.getVenue().getId(), owner);
+        proposal.setOwner(owner);
+        proposal.setName(proposalViewDTO.getName());
+        proposal.setDescription(proposalViewDTO.getDescription());
+        proposal.setDurationMin(proposalViewDTO.getDuration());
+        proposal.setOnline(proposalViewDTO.isOnline());
+        proposal.setVenue(venue);
+        proposalRepository.save(proposal);
+        return proposal.getId().toString();
+    }
 
 
     public Proposal getProposalByIdAndOwner(Long proposalId, User owner) {

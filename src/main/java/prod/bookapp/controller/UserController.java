@@ -22,7 +22,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Object>> register(@RequestBody UserRegisterDTO userRegisterDTO, HttpServletRequest request) {
-        var result =  userService.registerUser(userRegisterDTO, request);
+        var result = userService.registerUser(userRegisterDTO, request);
         return ResultWrapper.getResponse(result);
     }
 }

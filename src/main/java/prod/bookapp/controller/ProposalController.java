@@ -37,7 +37,7 @@ public class ProposalController {
     @PostMapping("/wVenue")
     public ResponseEntity<ApiResponse<Object>> createWithVenue(
             @RequestBody ProposalCreateWVenueDTO proposalCreateWVenueDTO
-            ) {
+    ) {
         var result = proposalService.createWithVenue(proposalCreateWVenueDTO, getAuth());
         return ResultWrapper.getResponse(result);
     }

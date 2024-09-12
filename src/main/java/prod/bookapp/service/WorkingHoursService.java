@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prod.bookapp.dto.WorkingHoursCreateDTO;
+import prod.bookapp.dto.converter.WorkingHoursViewDTOConverter;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.WorkingHours;
 import prod.bookapp.repository.WorkingHoursRepository;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class WorkingHoursService {
     private final WorkingHoursRepository workingHoursRepository;
+    private final WorkingHoursViewDTOConverter workingHoursViewDTOConverter;
 
-    public WorkingHoursService(WorkingHoursRepository workingHoursRepository) {
+    public WorkingHoursService(WorkingHoursRepository workingHoursRepository, WorkingHoursViewDTOConverter workingHoursViewDTOConverter) {
         this.workingHoursRepository = workingHoursRepository;
+        this.workingHoursViewDTOConverter = workingHoursViewDTOConverter;
     }
 
     private User getAuthUser(Authentication authentication) {
@@ -54,11 +57,11 @@ public class WorkingHoursService {
     @Transactional
     public String createOrUpdate(List<WorkingHoursCreateDTO> whDTOList, Authentication authentication) {
         var validationResult = validateWH(whDTOList);
-        if(validationResult != null){
+        if (validationResult != null) {
             return validationResult;
         }
         User owner = getAuthUser(authentication);
-        List<WorkingHours> existedWH = workingHoursRepository.findByOwner(owner);
+        List<WorkingHours> existedWH = workingHoursRepository.findAllByOwner(owner);
         if (!existedWH.isEmpty()) {
             workingHoursRepository.deleteAllByOwner(owner);
         }
@@ -78,7 +81,12 @@ public class WorkingHoursService {
 
 
     public WorkingHours findByOwnerAndDayOfWeek(User user, DayOfWeek dayOfWeek) {
-        return workingHoursRepository.findByOwnerAndDayOfWeek(user, dayOfWeek.getValue());
+        return workingHoursRepository.findByOwnerAndDayOfWeek(user, dayOfWeek.getValue()).orElse(null);
+    }
+
+    public List<WorkingHoursCreateDTO> getAll(Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        return workingHoursViewDTOConverter.convertToCreateDTO(workingHoursRepository.findAllByOwner(owner));
     }
 
 

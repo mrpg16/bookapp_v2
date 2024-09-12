@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ProposalRepository extends JpaRepository<Proposal, Long> {
     Optional<Proposal> findByIdAndOwnerAndDeletedFalse(Long id, User owner);
+
     List<Proposal> findAllByOwnerAndDeletedFalse(User owner);
 
 

@@ -6,12 +6,13 @@ import prod.bookapp.entity.User;
 import prod.bookapp.entity.WorkingHours;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WorkingHoursRepository extends JpaRepository<WorkingHours, Long> {
-    List<WorkingHours> findByOwner(User ownerId);
+    List<WorkingHours> findAllByOwner(User owner);
 
     void deleteAllByOwner(User owner);
 
-    WorkingHours findByOwnerAndDayOfWeek(User owner, int day);
+    Optional<WorkingHours> findByOwnerAndDayOfWeek(User owner, int day);
 }

@@ -13,8 +13,11 @@ import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.VenueService;
 import prod.bookapp.wraper.ApiResponse;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/venue")
+
 public class VenueController {
     private final VenueService venueService;
 
@@ -58,5 +61,31 @@ public class VenueController {
         return ResultWrapper.getResponse(result);
     }
 
+    @GetMapping("/type/{online}")
+    public ResponseEntity<ApiResponse<Object>> getAllOnlineVenues(
+            Pageable pageable,
+            @PathVariable("online") String online) {
+        if (Objects.equals(online, "online")) {
+            var result = new PagedModel<>(PaginationUtils.paginate(
+                    venueService.getAllOnlineVenues(getAuth()), pageable
+            ));
+            return ResultWrapper.getResponse(result);
+        }
+        if (Objects.equals(online, "offline")) {
+            var result = new PagedModel<>(PaginationUtils.paginate(
+                    venueService.getAllOfflineVenues(getAuth()), pageable
+            ));
+            return ResultWrapper.getResponse(result);
+        }
+        return ResultWrapper.getResponse("Error: path not found");
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<Object>> getById(
+            @PathVariable Long id
+    ) {
+        var result = venueService.getById(id, getAuth());
+        return ResultWrapper.getResponse(result);
+    }
 
 }

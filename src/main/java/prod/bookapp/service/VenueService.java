@@ -50,7 +50,7 @@ public class VenueService {
     @Transactional
     public String create(VenueCreateDTO venueDTO, Authentication authentication) {
         var validationResult = validateVenue(venueDTO);
-        if(validationResult != null) {
+        if (validationResult != null) {
             return validationResult;
         }
         Venue venue = new Venue();
@@ -81,12 +81,12 @@ public class VenueService {
     @Transactional
     public String update(VenueViewDTO venueDTO, Authentication authentication) {
         User owner = getAuthUser(authentication);
-        Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueDTO.getId(), owner);
+        Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueDTO.getId(), owner).orElse(null);
         if (venue == null) {
             return "Error: Venue not found";
         }
         var validationResult = validateVenue(venueDTO);
-        if(validationResult != null) {
+        if (validationResult != null) {
             return validationResult;
         }
         venue.setName(venueDTO.getName());
@@ -102,7 +102,7 @@ public class VenueService {
     @Transactional
     public String delete(long venueId, Authentication authentication) {
         User owner = getAuthUser(authentication);
-        Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueId, owner);
+        Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueId, owner).orElse(null);
         if (venue == null) {
             return "Error: Venue not found";
         }
@@ -118,6 +118,27 @@ public class VenueService {
     }
 
     public Venue findByIdAndOwnerAndDeletedFalse(long venueId, User owner) {
-        return venueRepository.findByIdAndOwnerAndDeletedFalse(venueId, owner);
+        return venueRepository.findByIdAndOwnerAndDeletedFalse(venueId, owner).orElse(null);
+    }
+
+    public VenueViewDTO getById(long venueId, Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        Venue venue = findByIdAndOwnerAndDeletedFalse(venueId, owner);
+        if(venue == null){
+            return null;
+        }
+        return venueViewDTOConverter.convertToViewDTO(venue);
+    }
+
+    public List<VenueViewDTO> getAllOnlineVenues(Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        List<Venue> venues = venueRepository.findAllByOwnerAndDeletedFalseAndOnline(owner, true);
+        return venueViewDTOConverter.convertToViewDTO(venues);
+    }
+
+    public List<VenueViewDTO> getAllOfflineVenues(Authentication authentication) {
+        User owner = getAuthUser(authentication);
+        List<Venue> venues = venueRepository.findAllByOwnerAndDeletedFalseAndOnline(owner, false);
+        return venueViewDTOConverter.convertToViewDTO(venues);
     }
 }
