@@ -2,13 +2,16 @@ package prod.bookapp.controller;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.AppointmentBookDTO;
+import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.AppointmentService;
 import prod.bookapp.service.BookingService;
+import prod.bookapp.wraper.ApiResponse;
 
 import java.time.LocalDate;
 
@@ -28,46 +31,51 @@ public class AppointmentController {
     }
 
     @PostMapping("/book")
-    public String bookAppointment(
+    public ResponseEntity<ApiResponse<Object>> bookAppointment(
             @RequestBody AppointmentBookDTO appointment
     ) {
-        return bookingService.book(appointment, getAuth());
+        var result = bookingService.book(appointment, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @GetMapping("/worker")
-    public PagedModel<?> getAppointmentsAsWorkerByDates(
+    public ResponseEntity<ApiResponse<Object>> getAppointmentsAsWorkerByDates(
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo,
             Pageable pageable
     ) {
-        return new PagedModel<>(PaginationUtils.paginate(
+        var result = new PagedModel<>(PaginationUtils.paginate(
                 appointmentService.getAppointmentsByWorkerAndDateBetween(getAuth(), dateFrom, dateTo), pageable
         ));
+        return ResultWrapper.getResponse(result);
     }
 
     @GetMapping("/client")
-    public PagedModel<?> getAppointmentsAsClientByDates(
+    public ResponseEntity<ApiResponse<Object>> getAppointmentsAsClientByDates(
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo,
             Pageable pageable
     ) {
-        return new PagedModel<>(PaginationUtils.paginate(
+        var result = new PagedModel<>(PaginationUtils.paginate(
                 appointmentService.getAppointmentsByClientAndDateBetween(getAuth(), dateFrom, dateTo), pageable
         ));
+        return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/worker/confirm")
-    public String confirm(
+    public ResponseEntity<ApiResponse<Object>> confirm(
             @RequestParam(required = true) Long appId
     ) {
-        return appointmentService.confirm(appId, getAuth());
+        var result = appointmentService.confirm(appId, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/worker/reject")
-    public String reject(
+    public ResponseEntity<ApiResponse<Object>> reject(
             @RequestParam(required = true) Long appId
     ) {
-        return appointmentService.reject(appId, getAuth());
+        var result = appointmentService.reject(appId, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
 

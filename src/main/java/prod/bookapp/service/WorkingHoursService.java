@@ -43,10 +43,10 @@ public class WorkingHoursService {
 
     private String validateWH(List<WorkingHoursCreateDTO> whDTOList) {
         if (hasTimeIssue(whDTOList)) {
-            return "Sorry, but you have time issues";
+            return "Error: Sorry, but you have time issues";
         }
         if (!findDuplicatesByDayOfWeek(whDTOList).isEmpty()) {
-            return "Sorry, but you have duplicate day";
+            return "Error: Sorry, but you have duplicate day";
         }
         return null;
     }

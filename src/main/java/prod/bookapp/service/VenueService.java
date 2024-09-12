@@ -29,19 +29,19 @@ public class VenueService {
 
     public String validateVenue(VenueDTO venueDTO) {
         if (venueDTO.getName() == null || venueDTO.getName().isEmpty()) {
-            return "Venue name cannot be empty";
+            return "Error: Venue name cannot be empty";
         }
 
         boolean online = venueDTO.isOnline();
         if (online) {
             if (venueDTO.getOnlineProvider() == null || venueDTO.getOnlineProvider().isEmpty() ||
                     venueDTO.getLink() == null || venueDTO.getLink().isEmpty()) {
-                return "Link or provider is empty for the online venue";
+                return "Error: Link or provider is empty for the online venue";
             }
         } else {
             if ((venueDTO.getPhone() == null || venueDTO.getPhone().isEmpty()) &&
                     (venueDTO.getFullAddress() == null || venueDTO.getFullAddress().isEmpty())) {
-                return "Phone and address is empty for the offline venue";
+                return "Error: Phone and address is empty for the offline venue";
             }
         }
         return null;
@@ -83,7 +83,7 @@ public class VenueService {
         User owner = getAuthUser(authentication);
         Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueDTO.getId(), owner);
         if (venue == null) {
-            return "Venue not found";
+            return "Error: Venue not found";
         }
         var validationResult = validateVenue(venueDTO);
         if(validationResult != null) {
@@ -104,7 +104,7 @@ public class VenueService {
         User owner = getAuthUser(authentication);
         Venue venue = venueRepository.findByIdAndOwnerAndDeletedFalse(venueId, owner);
         if (venue == null) {
-            return "Venue not found";
+            return "Error: Venue not found";
         }
         venue.setDeleted(true);
         venueRepository.save(venue);

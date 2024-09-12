@@ -3,6 +3,7 @@ package prod.bookapp.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.TimeSlotDTO;
 import prod.bookapp.dto.customResponse.FreeSlotsSearchDTO;
+import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.TimeSlotService;
+import prod.bookapp.wraper.ApiResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,21 +34,23 @@ public class TimeSlotController {
     }
 
     @GetMapping("/self/all")
-    public PagedModel<?> getAllSelfSlots(
+    public ResponseEntity<ApiResponse<Object>> getAllSelfSlots(
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo,
             Pageable pageable
     ) {
         if (dateFrom.equals(dateTo)) {
             List<TimeSlotDTO> slots = timeSlotService.getAllSelfSlotsByDate(dateFrom, getAuth());
-            return new PagedModel<>(PaginationUtils.paginate(slots, pageable));
+            var result = new PagedModel<>(PaginationUtils.paginate(slots, pageable));
+            return ResultWrapper.getResponse(result);
         }
         List<TimeSlotDTO> slots = timeSlotService.getAllSelfSlotsByDateBetween(dateFrom, dateTo, getAuth());
-        return new PagedModel<>(PaginationUtils.paginate(slots, pageable));
+        var result = new PagedModel<>(PaginationUtils.paginate(slots, pageable));
+        return ResultWrapper.getResponse(result);
     }
 
     @GetMapping("/free")
-    public FreeSlotsSearchDTO getFreeSlotsByDateAndWorkerAndProposal(
+    public ResponseEntity<ApiResponse<Object>> getFreeSlotsByDateAndWorkerAndProposal(
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo,
             @RequestParam Long workerId,
@@ -60,7 +65,8 @@ public class TimeSlotController {
             slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId);
         }
         paginatedSlots = PaginationUtils.paginate(slots, pageable);
-        return new FreeSlotsSearchDTO(new PagedModel<>(paginatedSlots), workerId, proposalId);
+        var result = new FreeSlotsSearchDTO(new PagedModel<>(paginatedSlots), workerId, proposalId);
+        return ResultWrapper.getResponse(result);
     }
 
 }

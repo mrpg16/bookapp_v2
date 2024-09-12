@@ -2,13 +2,16 @@ package prod.bookapp.controller;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.VenueCreateDTO;
 import prod.bookapp.dto.VenueViewDTO;
+import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.VenueService;
+import prod.bookapp.wraper.ApiResponse;
 
 @RestController
 @RequestMapping("/venue")
@@ -24,31 +27,35 @@ public class VenueController {
     }
 
     @PostMapping
-    public String create(
+    public ResponseEntity<ApiResponse<Object>> create(
             @RequestBody VenueCreateDTO venueCreateDTO
     ) {
-        return venueService.create(venueCreateDTO, getAuth());
+        var result = venueService.create(venueCreateDTO, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/update")
-    public String update(
+    public ResponseEntity<ApiResponse<Object>> update(
             @RequestBody VenueViewDTO venueViewDTO
     ) {
-        return venueService.update(venueViewDTO, getAuth());
+        var result = venueService.update(venueViewDTO, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/delete")
-    public String delete(
+    public ResponseEntity<ApiResponse<Object>> delete(
             @RequestParam Long id
     ) {
-        return venueService.delete(id, getAuth());
+        var result = venueService.delete(id, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @GetMapping
-    public PagedModel<?> getAllVenues(Pageable pageable) {
-        return new PagedModel<>(PaginationUtils.paginate(
+    public ResponseEntity<ApiResponse<Object>> getAllVenues(Pageable pageable) {
+        var result = new PagedModel<>(PaginationUtils.paginate(
                 venueService.getAllVenues(getAuth()), pageable
         ));
+        return ResultWrapper.getResponse(result);
     }
 
 

@@ -1,5 +1,6 @@
 package prod.bookapp.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,6 +8,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ApiResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,23 +19,28 @@ public class AuthController {
     }
 
     @GetMapping("/isAuthenticated")
-    public String isAuthenticated() {
-        return getAuth().toString();
+    public ResponseEntity<ApiResponse<Object>> isAuthenticated() {
+        var result = getAuth().toString();
+        return ResultWrapper.getResponse(result);
     }
 
     @GetMapping("/type")
-    public String getAuthType() {
+    public ResponseEntity<ApiResponse<Object>> getAuthType() {
         Authentication auth = getAuth();
         if (auth == null) {
-            return "not authenticated";
+            var result = "not authenticated";
+            return ResultWrapper.getResponse(result);
         }
         if (auth instanceof OAuth2AuthenticationToken) {
-            return "oauth2";
+            var result = "oauth2";
+            return ResultWrapper.getResponse(result);
         }
         if (auth instanceof UsernamePasswordAuthenticationToken) {
-            return "basic";
+            var result = "basic";
+            return ResultWrapper.getResponse(result);
         }
-        return "not authenticated";
+        var result = "not authenticated";
+        return ResultWrapper.getResponse(result);
     }
 }
 //TODO HANDLE WRONG PASSWORD AUTH

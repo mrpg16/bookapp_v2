@@ -98,7 +98,7 @@ public class AppointmentService {
     public String confirm(Long id, Authentication authentication) {
         Appointment app = appointmentRepository.findByIdAndWorkerAndStatus(id, getAuthUser(authentication), Enums.APPOINTMENT_STATUS_UNCONFIRMED.getValue());
         if (app == null) {
-            return "Not found";
+            return "Error: Not found";
         }
         app.setStatus(Enums.APPOINTMENT_STATUS_CONFIRMED.getValue());
         appointmentRepository.save(app);
@@ -109,7 +109,7 @@ public class AppointmentService {
     public String reject(Long id, Authentication authentication) {
         Appointment app = appointmentRepository.findByIdAndWorkerAndStatus(id, getAuthUser(authentication), Enums.APPOINTMENT_STATUS_UNCONFIRMED.getValue());
         if (app == null) {
-            return "Not found";
+            return "Error: Not found";
         }
         app.setStatus(Enums.APPOINTMENT_STATUS_REJECTED.getValue());
         appointmentRepository.save(app);

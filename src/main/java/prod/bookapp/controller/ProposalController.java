@@ -1,5 +1,6 @@
 package prod.bookapp.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prod.bookapp.dto.ProposalCreateDTO;
 import prod.bookapp.dto.ProposalCreateWVenueDTO;
+import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.ProposalService;
+import prod.bookapp.wraper.ApiResponse;
 
 @RestController
 @RequestMapping("/proposal")
@@ -24,16 +27,18 @@ public class ProposalController {
     }
 
     @PostMapping()
-    public String create(
+    public ResponseEntity<ApiResponse<Object>> create(
             @RequestBody ProposalCreateDTO proposalCreateDTO
     ) {
-        return proposalService.create(proposalCreateDTO, getAuth());
+        var result = proposalService.create(proposalCreateDTO, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/wVenue")
-    public String createWithVenue(
+    public ResponseEntity<ApiResponse<Object>> createWithVenue(
             @RequestBody ProposalCreateWVenueDTO proposalCreateWVenueDTO
             ) {
-        return proposalService.createWithVenue(proposalCreateWVenueDTO, getAuth());
+        var result = proposalService.createWithVenue(proposalCreateWVenueDTO, getAuth());
+        return ResultWrapper.getResponse(result);
     }
 }

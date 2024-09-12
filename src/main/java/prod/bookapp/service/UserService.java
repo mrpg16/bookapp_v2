@@ -37,11 +37,11 @@ public class UserService {
         var email = userRegisterDTO.getEmail();
         var password = userRegisterDTO.getPassword();
         if (email.isEmpty() || password.isEmpty()) {
-            return "Invalid email or password";
+            return "Error: Invalid email or password";
         }
         User user = userRepository.findByEmailAndProvider(email, "basic");
         if (user != null) {
-            return ("User " + email + " already exists");
+            return ("Error: User " + email + " already exists");
         }
         User newUser = new User();
         newUser.setEmail(email);

@@ -39,11 +39,11 @@ public class BookingService {
         Long proposalId = bookDTO.getProposalId();
         User client = getAuthUser(auth);
         if (appointmentService.hasAppointment(date, timeStart, client)) {
-            return "You already have an appointment on that date and time";
+            return "Error: You already have an appointment on that date and time";
         }
         TimeSlotDTO freeSlot = timeSlotService.getFreeSlotByDateTimeAndProposalIdAndWorkerId(date, timeStart, proposalId, workerId);
         if (freeSlot == null) {
-            return "There is no free slot";
+            return "Error: There is no free slot";
         }
         Proposal proposal = proposalService.getProposalById(proposalId);
         Appointment appointment = new Appointment();

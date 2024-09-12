@@ -28,4 +28,5 @@ public class VenueViewDTOConverter {
         }
         return venueViewDTOs;
     }
+
 }
