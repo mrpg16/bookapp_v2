@@ -14,6 +14,6 @@ public class ProposalCreateDTO implements ProposalDTO {
     private String name;
     private String description;
     private int duration;
-    private long venueId;
+    private long[] venueIds;
     private boolean online;
 }

@@ -11,6 +11,7 @@ import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
 import prod.bookapp.repository.VenueRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -76,6 +77,23 @@ public class VenueService {
         venue.setLink(venueDTO.getLink());
         venueRepository.save(venue);
         return venue;
+    }
+
+    public List<Venue> createWithoutValidation(List<VenueCreateDTO> venueDTO, Authentication authentication) {
+        List<Venue> venuesToSAve = new ArrayList<>();
+        for (VenueCreateDTO v : venueDTO) {
+            Venue venue = new Venue();
+            venue.setName(v.getName());
+            venue.setFullAddress(v.getFullAddress());
+            venue.setPhone(v.getPhone());
+            venue.setOwner(getAuthUser(authentication));
+            venue.setOnline(v.isOnline());
+            venue.setOnlineProvider(v.getOnlineProvider());
+            venue.setLink(v.getLink());
+            venuesToSAve.add(venue);
+        }
+        venueRepository.saveAll(venuesToSAve);
+        return venuesToSAve;
     }
 
     @Transactional

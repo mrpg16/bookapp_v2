@@ -62,7 +62,7 @@ public class ProposalController {
     @PostMapping("/delete")
     public ResponseEntity<ApiResponse<Object>> delete(
             @RequestParam Long id
-    ){
+    ) {
         var result = proposalService.delete(id, getAuth());
         return ResultWrapper.getResponse(result);
     }
@@ -72,6 +72,14 @@ public class ProposalController {
             @PathVariable Long id
     ) {
         var result = proposalService.getById(id, getAuth());
+        return ResultWrapper.getResponse(result);
+    }
+
+    @GetMapping("/worker/{id}")
+    public ResponseEntity<ApiResponse<Object>> getByWorkerId(
+            @PathVariable Long id)
+    {
+        var result = proposalService.getAllByWorkerId(id);
         return ResultWrapper.getResponse(result);
     }
 }

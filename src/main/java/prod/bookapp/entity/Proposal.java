@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import java.util.List;
 
 @Entity
 @Setter
@@ -23,8 +27,8 @@ public class Proposal {
     private String description;
     private int durationMin;
     private boolean online;
-    @ManyToOne()
-    @JoinColumn(name = "venue_id")
-    private Venue venue;
+    @ManyToMany()
+    @Fetch(FetchMode.JOIN)
+    private List<Venue> venues;
     private boolean deleted = false;
 }

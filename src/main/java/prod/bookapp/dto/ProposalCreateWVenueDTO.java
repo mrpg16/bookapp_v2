@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prod.bookapp.dto.interfaces.ProposalDTO;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -14,6 +16,6 @@ public class ProposalCreateWVenueDTO implements ProposalDTO {
     private String name;
     private String description;
     private int duration;
-    private VenueCreateDTO venue;
+    private List<VenueCreateDTO> venues;
     private boolean online;
 }

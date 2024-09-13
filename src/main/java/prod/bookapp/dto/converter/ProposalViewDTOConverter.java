@@ -21,7 +21,7 @@ public class ProposalViewDTOConverter {
         proposalViewDTO.setName(proposal.getName());
         proposalViewDTO.setDescription(proposal.getDescription());
         proposalViewDTO.setDuration(proposal.getDurationMin());
-        proposalViewDTO.setVenue(venueViewDTOConverter.convertToViewDTO(proposal.getVenue()));
+        proposalViewDTO.setVenues(venueViewDTOConverter.convertToViewDTO(proposal.getVenues()));
         proposalViewDTO.setOnline(proposal.isOnline());
         return proposalViewDTO;
     }

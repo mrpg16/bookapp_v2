@@ -49,6 +49,7 @@ public class Config {
                         .requestMatchers(antMatcher("/timeslot/free")).permitAll()
                         .requestMatchers(antMatcher("/auth/isAuthenticated")).permitAll()
                         .requestMatchers(antMatcher("/auth/type")).permitAll()
+                        .requestMatchers(antMatcher("/proposal/worker/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2LoginConfigurer ->

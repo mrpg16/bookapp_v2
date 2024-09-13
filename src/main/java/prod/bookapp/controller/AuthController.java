@@ -21,8 +21,6 @@ public class AuthController {
     @GetMapping("/isAuthenticated")
     public ResponseEntity<ApiResponse<Object>> isAuthenticated() {
         var result = getAuth();
-        System.out.println(result);
-        System.out.println(result.isAuthenticated());
         if (!result.isAuthenticated() || result.getPrincipal().equals("anonymousUser")) {
             return ResultWrapper.getResponse(false);
         }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -14,6 +16,6 @@ public class ProposalViewDTO {
     private String name;
     private String description;
     private int duration;
-    private VenueViewDTO venue;
+    private List<VenueViewDTO> venues;
     private boolean online;
 }
