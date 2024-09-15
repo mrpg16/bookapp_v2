@@ -76,10 +76,21 @@ public class ProposalController {
     }
 
     @GetMapping("/worker/{id}")
-    public ResponseEntity<ApiResponse<Object>> getByWorkerId(
-            @PathVariable Long id)
-    {
+    public ResponseEntity<ApiResponse<Object>> getAllByWorkerId(
+            @PathVariable Long id) {
         var result = proposalService.getAllByWorkerId(id);
+        return ResultWrapper.getResponse(result);
+    }
+
+    @GetMapping("/venues/worker/{workerId}/proposal/{propId}")
+    public ResponseEntity<ApiResponse<Object>> getAllVenuesByWorkerIdAndPropId(
+            @PathVariable("workerId") long workerId
+            , @PathVariable("propId") long propId
+            , Pageable pageable
+    ) {
+        var result = new PagedModel<>(PaginationUtils.paginate(
+                proposalService.getAllVenuesOfProposalByIdAndWorkerId(workerId, propId), pageable
+        ));
         return ResultWrapper.getResponse(result);
     }
 }

@@ -46,7 +46,7 @@ public class Config {
                         .requestMatchers(antMatcher("/login")).permitAll()
                         .requestMatchers(antMatcher("/login/**")).permitAll()
                         .requestMatchers(antMatcher("/")).permitAll()
-                        .requestMatchers(antMatcher("/timeslot/free")).permitAll()
+                        .requestMatchers(antMatcher("/timeslot/free/**")).permitAll()
                         .requestMatchers(antMatcher("/auth/isAuthenticated")).permitAll()
                         .requestMatchers(antMatcher("/auth/type")).permitAll()
                         .requestMatchers(antMatcher("/proposal/worker/**")).permitAll()
@@ -82,7 +82,7 @@ public class Config {
                     new org.springframework.web.cors.CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(Collections.singletonList("*")); //config.setAllowedOriginPatterns(Arrays.asList("https://frontend-domain.com", "https://frontend-domain2.com"));
             config.setAllowCredentials(true);
             return config;
         };

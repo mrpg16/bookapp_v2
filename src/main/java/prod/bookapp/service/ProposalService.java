@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import prod.bookapp.dto.*;
 import prod.bookapp.dto.converter.ProposalViewDTOConverter;
+import prod.bookapp.dto.converter.VenueViewDTOConverter;
 import prod.bookapp.dto.interfaces.ProposalDTO;
 import prod.bookapp.dto.interfaces.VenueDTO;
 import prod.bookapp.entity.Proposal;
@@ -21,13 +22,15 @@ public class ProposalService {
 
     private final ProposalRepository proposalRepository;
     private final VenueService venueService;
+    private final VenueViewDTOConverter venueViewDTOConverter;
     private final ProposalViewDTOConverter proposalViewDTOConverter;
     private final UserRepository userRepository;
 
 
-    public ProposalService(ProposalRepository proposalRepository, VenueService venueService, ProposalViewDTOConverter proposalViewDTOConverter, UserRepository userRepository) {
+    public ProposalService(ProposalRepository proposalRepository, VenueService venueService, VenueViewDTOConverter venueViewDTOConverter, ProposalViewDTOConverter proposalViewDTOConverter, UserRepository userRepository) {
         this.proposalRepository = proposalRepository;
         this.venueService = venueService;
+        this.venueViewDTOConverter = venueViewDTOConverter;
         this.proposalViewDTOConverter = proposalViewDTOConverter;
         this.userRepository = userRepository;
     }
@@ -186,5 +189,15 @@ public class ProposalService {
         User owner = userRepository.findById(id).orElse(null);
         List<Proposal> props = proposalRepository.findAllByOwnerAndDeletedFalse(owner);
         return proposalViewDTOConverter.convertToProposalViewDTO(props);
+    }
+
+    public List<VenueViewDTO> getAllVenuesOfProposalByIdAndWorkerId(long workerId, long proposalId) {
+        User owner = userRepository.findById(workerId).orElse(null);
+        Proposal prop = proposalRepository.findByIdAndOwnerAndDeletedFalse(proposalId, owner).orElse(null);
+        if(prop == null){
+            return null;
+        }
+        List<Venue> venues = prop.getVenues();
+        return venueViewDTOConverter.convertToViewDTO(venues);
     }
 }

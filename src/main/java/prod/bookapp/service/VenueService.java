@@ -66,19 +66,6 @@ public class VenueService {
         return venue.getId().toString();
     }
 
-    public Venue createWithoutValidation(VenueCreateDTO venueDTO, Authentication authentication) {
-        Venue venue = new Venue();
-        venue.setName(venueDTO.getName());
-        venue.setFullAddress(venueDTO.getFullAddress());
-        venue.setPhone(venueDTO.getPhone());
-        venue.setOwner(getAuthUser(authentication));
-        venue.setOnline(venueDTO.isOnline());
-        venue.setOnlineProvider(venueDTO.getOnlineProvider());
-        venue.setLink(venueDTO.getLink());
-        venueRepository.save(venue);
-        return venue;
-    }
-
     public List<Venue> createWithoutValidation(List<VenueCreateDTO> venueDTO, Authentication authentication) {
         List<Venue> venuesToSAve = new ArrayList<>();
         for (VenueCreateDTO v : venueDTO) {

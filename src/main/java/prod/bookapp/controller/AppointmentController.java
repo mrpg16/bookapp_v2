@@ -64,7 +64,7 @@ public class AppointmentController {
 
     @PostMapping("/worker/confirm")
     public ResponseEntity<ApiResponse<Object>> confirm(
-            @RequestParam(required = true) Long appId
+            @RequestParam Long appId
     ) {
         var result = appointmentService.confirm(appId, getAuth());
         return ResultWrapper.getResponse(result);
@@ -72,7 +72,7 @@ public class AppointmentController {
 
     @PostMapping("/worker/reject")
     public ResponseEntity<ApiResponse<Object>> reject(
-            @RequestParam(required = true) Long appId
+            @RequestParam Long appId
     ) {
         var result = appointmentService.reject(appId, getAuth());
         return ResultWrapper.getResponse(result);
