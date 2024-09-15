@@ -26,6 +26,9 @@ public class Appointment {
     @ManyToOne()
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
+    @ManyToOne()
+    @JoinColumn(name = "venue_id")
+    private Venue venue;
     private LocalDate date;
     private LocalTime timeStart;
     private LocalTime timeEnd;

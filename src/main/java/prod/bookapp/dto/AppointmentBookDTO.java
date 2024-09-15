@@ -15,6 +15,7 @@ import java.time.LocalTime;
 public class AppointmentBookDTO {
     private Long workerId;
     private Long proposalId;
+    private Long venueId;
     private LocalDate date;
     private LocalTime time;
 }

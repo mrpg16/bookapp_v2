@@ -9,13 +9,10 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppointmentViewDTO {
+public class ProposalAppointmentViewDTO {
     private Long id;
-    private ProposalAppointmentViewDTO proposal;
-    private VenueViewDTO venue;
-    private UserViewDTO client;
-    private String status;
+    private String name;
+    private String description;
+    private int duration;
+    private boolean online;
 }
-
-
-

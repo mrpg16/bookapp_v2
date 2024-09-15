@@ -61,7 +61,7 @@ public class ProposalService {
                 return "Error: Venue type mismatch";
             }
             var venueValidation = venueService.validateVenue(v);
-            if(venueValidation != null) {
+            if (venueValidation != null) {
                 return venueValidation;
             }
         }
@@ -194,10 +194,12 @@ public class ProposalService {
     public List<VenueViewDTO> getAllVenuesOfProposalByIdAndWorkerId(long workerId, long proposalId) {
         User owner = userRepository.findById(workerId).orElse(null);
         Proposal prop = proposalRepository.findByIdAndOwnerAndDeletedFalse(proposalId, owner).orElse(null);
-        if(prop == null){
+        if (prop == null) {
             return null;
         }
         List<Venue> venues = prop.getVenues();
         return venueViewDTOConverter.convertToViewDTO(venues);
     }
+
+
 }

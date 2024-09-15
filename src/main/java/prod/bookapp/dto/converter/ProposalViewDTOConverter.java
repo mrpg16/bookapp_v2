@@ -1,6 +1,7 @@
 package prod.bookapp.dto.converter;
 
 import org.springframework.stereotype.Component;
+import prod.bookapp.dto.ProposalAppointmentViewDTO;
 import prod.bookapp.dto.ProposalViewDTO;
 import prod.bookapp.entity.Proposal;
 
@@ -33,4 +34,23 @@ public class ProposalViewDTOConverter {
         }
         return proposalViewDTOList;
     }
+
+    public ProposalAppointmentViewDTO convertToProposalBookingViewDTO(Proposal proposal) {
+        ProposalAppointmentViewDTO proposalAppointmentViewDTO = new ProposalAppointmentViewDTO();
+        proposalAppointmentViewDTO.setId(proposal.getId());
+        proposalAppointmentViewDTO.setName(proposal.getName());
+        proposalAppointmentViewDTO.setDescription(proposal.getDescription());
+        proposalAppointmentViewDTO.setDuration(proposal.getDurationMin());
+        proposalAppointmentViewDTO.setOnline(proposal.isOnline());
+        return proposalAppointmentViewDTO;
+    }
+
+    public List<ProposalAppointmentViewDTO> convertToProposalBookingViewDTO(List<Proposal> proposals) {
+        List<ProposalAppointmentViewDTO> proposalViewDTOList = new ArrayList<>();
+        for (Proposal proposal : proposals) {
+            proposalViewDTOList.add(convertToProposalBookingViewDTO(proposal));
+        }
+        return proposalViewDTOList;
+    }
+
 }

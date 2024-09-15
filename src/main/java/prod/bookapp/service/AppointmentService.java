@@ -3,6 +3,7 @@ package prod.bookapp.service;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import prod.bookapp.dto.AppointmentViewClientDTO;
 import prod.bookapp.dto.AppointmentViewWorkerDTO;
 import prod.bookapp.dto.converter.AppointmentViewDTOConverter;
 import prod.bookapp.entity.Appointment;
@@ -41,6 +42,17 @@ public class AppointmentService {
         return dtos;
     }
 
+    private List<AppointmentViewClientDTO> getAppointmentViewClientDTOS(List<Appointment> appointmentList) {
+        List<AppointmentViewClientDTO> dtos = new ArrayList<>();
+        if (appointmentList != null && !appointmentList.isEmpty()) {
+            for (Appointment app : appointmentList) {
+                dtos.add(appointmentViewDTOConverter.convertToAppointmentViewClientDTO(app));
+            }
+        }
+        dtos.sort(Comparator.comparing(AppointmentViewClientDTO::getDate).thenComparing(AppointmentViewClientDTO::getTimeStart));
+        return dtos;
+    }
+
     public List<Appointment> getAllAppointmentsByWorkerAndDate(User worker, LocalDate date) {
         return appointmentRepository.findAllByWorkerAndDate(worker, date);
     }
@@ -63,6 +75,7 @@ public class AppointmentService {
         return app != null;
     }
 
+    @Transactional
     public Appointment save(Appointment appointment) {
         return appointmentRepository.save(appointment);
     }
@@ -81,7 +94,7 @@ public class AppointmentService {
         return getAppointmentViewWorkerDTOS(appointmentList);
     }
 
-    public List<AppointmentViewWorkerDTO> getAppointmentsByClientAndDateBetween(Authentication authentication, LocalDate start, LocalDate end) {
+    public List<AppointmentViewClientDTO> getAppointmentsByClientAndDateBetween(Authentication authentication, LocalDate start, LocalDate end) {
         if (start.isAfter(end)) {
             return null;
         }
@@ -91,7 +104,7 @@ public class AppointmentService {
         } else {
             appointmentList = getAllAppointmentsByClientAndDate(getAuthUser(authentication), start);
         }
-        return getAppointmentViewWorkerDTOS(appointmentList);
+        return getAppointmentViewClientDTOS(appointmentList);
     }
 
     @Transactional

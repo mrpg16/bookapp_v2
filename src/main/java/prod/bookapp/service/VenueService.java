@@ -146,4 +146,8 @@ public class VenueService {
         List<Venue> venues = venueRepository.findAllByOwnerAndDeletedFalseAndOnline(owner, false);
         return venueViewDTOConverter.convertToViewDTO(venues);
     }
+
+    public Venue getById(Long id) {
+        return venueRepository.findByIdAndDeletedFalse(id).orElse(null);
+    }
 }

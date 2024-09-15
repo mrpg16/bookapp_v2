@@ -1,5 +1,6 @@
 package prod.bookapp.enums;
 
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import prod.bookapp.wraper.ApiResponse;
@@ -27,6 +28,11 @@ public class ResultWrapper {
         }
         if (response instanceof Object[] array) {
             if (array.length == 0) {
+                return new ResponseEntity<>(new ApiResponse<>("not found"), HttpStatus.NOT_FOUND);
+            }
+        }
+        if (response instanceof PagedModel pageModel) {
+            if (pageModel.getContent().isEmpty()) {
                 return new ResponseEntity<>(new ApiResponse<>("not found"), HttpStatus.NOT_FOUND);
             }
         }

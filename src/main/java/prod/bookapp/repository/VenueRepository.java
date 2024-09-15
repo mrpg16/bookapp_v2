@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface VenueRepository extends JpaRepository<Venue, Long> {
     Optional<Venue> findByIdAndOwnerAndDeletedFalse(Long id, User owner);
 
+    Optional<Venue> findByIdAndDeletedFalse(Long id);
+
     List<Venue> findAllByOwnerAndDeletedFalse(User owner);
 
     List<Venue> findAllByOwnerAndDeletedFalseAndOnline(User owner, boolean online);

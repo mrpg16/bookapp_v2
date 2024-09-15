@@ -14,7 +14,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class AppointmentViewWorkerDTO {
     private Long id;
-    private ProposalViewDTO proposal;
+    private ProposalAppointmentViewDTO proposal;
+    private VenueViewDTO venue;
     private UserViewDTO client;
     private String status;
     private LocalDate date;
