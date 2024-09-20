@@ -79,6 +79,7 @@ public class TimeSlotService {
             busySlot.setDate(date);
             busySlot.setAppointment(appointmentViewDTOConverter.convertToAppointmentViewDTO(app));
             busySlot.setDurationMin((int) Duration.between(app.getTimeStart(), app.getTimeEnd()).toMinutes());
+
             slots.add(busySlot);
             currentStart = app.getTimeEnd();
         }

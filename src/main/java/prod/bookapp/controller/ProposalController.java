@@ -14,6 +14,8 @@ import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.ProposalService;
 import prod.bookapp.wraper.ApiResponse;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/proposal")
 public class ProposalController {
@@ -29,17 +31,17 @@ public class ProposalController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse<Object>> create(
-            @RequestBody ProposalCreateDTO proposalCreateDTO
+            @RequestBody List<ProposalCreateDTO> proposalCreateDTOs
     ) {
-        var result = proposalService.create(proposalCreateDTO, getAuth());
+        var result = proposalService.createAll(proposalCreateDTOs, getAuth());
         return ResultWrapper.getResponse(result);
     }
 
     @PostMapping("/wVenue")
     public ResponseEntity<ApiResponse<Object>> createWithVenue(
-            @RequestBody ProposalCreateWVenueDTO proposalCreateWVenueDTO
+            @RequestBody List<ProposalCreateWVenueDTO> proposalCreateWVenueDTOs
     ) {
-        var result = proposalService.createWithVenue(proposalCreateWVenueDTO, getAuth());
+        var result = proposalService.createAllWithVenue(proposalCreateWVenueDTOs, getAuth());
         return ResultWrapper.getResponse(result);
     }
 

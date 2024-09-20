@@ -24,6 +24,7 @@ public class AppointmentViewDTOConverter {
         AppointmentViewDTO appointmentViewDTO = new AppointmentViewDTO();
         appointmentViewDTO.setId(appointment.getId());
         appointmentViewDTO.setProposal(proposalViewDTOConverter.convertToProposalBookingViewDTO(appointment.getProposal()));
+        appointmentViewDTO.setVenue(venueViewDTOConverter.convertToViewDTO(appointment.getVenue()));
         appointmentViewDTO.setClient(userViewDTOConverter.convertToUserViewDTO(appointment.getClient()));
         appointmentViewDTO.setStatus(appointment.getStatus());
         return appointmentViewDTO;

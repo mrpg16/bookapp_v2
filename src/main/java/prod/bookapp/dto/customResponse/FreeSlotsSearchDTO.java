@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.web.PagedModel;
+import prod.bookapp.dto.VenueViewDTO;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -14,4 +17,5 @@ public class FreeSlotsSearchDTO {
     private PagedModel<?> timeSlots;
     private Long workerId;
     private long proposalId;
+    private List<VenueViewDTO> availableVenues;
 }

@@ -9,6 +9,7 @@ import prod.bookapp.dto.converter.VenueViewDTOConverter;
 import prod.bookapp.dto.interfaces.VenueDTO;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
+import prod.bookapp.enums.Enums;
 import prod.bookapp.repository.VenueRepository;
 
 import java.util.ArrayList;
@@ -32,12 +33,15 @@ public class VenueService {
         if (venueDTO.getName() == null || venueDTO.getName().isEmpty()) {
             return "Error: Venue name cannot be empty";
         }
-
         boolean online = venueDTO.isOnline();
         if (online) {
             if (venueDTO.getOnlineProvider() == null || venueDTO.getOnlineProvider().isEmpty() ||
                     venueDTO.getLink() == null || venueDTO.getLink().isEmpty()) {
                 return "Error: Link or provider is empty for the online venue";
+            }
+            var providers = Enums.getOnlineProviders();
+            if(providers.stream().noneMatch(p->p.equals(venueDTO.getOnlineProvider()))){
+                return "Error: Venue provider not found";
             }
         } else {
             if ((venueDTO.getPhone() == null || venueDTO.getPhone().isEmpty()) &&
@@ -49,21 +53,25 @@ public class VenueService {
     }
 
     @Transactional
-    public String create(VenueCreateDTO venueDTO, Authentication authentication) {
-        var validationResult = validateVenue(venueDTO);
-        if (validationResult != null) {
-            return validationResult;
+    public String createAll(List<VenueCreateDTO> venueDTOs, Authentication authentication) {
+        List<Venue> venuesToSave = new ArrayList<>();
+        for (VenueCreateDTO venueDTO : venueDTOs) {
+            var validationResult = validateVenue(venueDTO);
+            if (validationResult != null) {
+                return validationResult;
+            }
+            Venue venue = new Venue();
+            venue.setName(venueDTO.getName());
+            venue.setFullAddress(venueDTO.getFullAddress());
+            venue.setPhone(venueDTO.getPhone());
+            venue.setOwner(getAuthUser(authentication));
+            venue.setOnline(venueDTO.isOnline());
+            venue.setOnlineProvider(venueDTO.getOnlineProvider());
+            venue.setLink(venueDTO.getLink());
+            venuesToSave.add(venue);
         }
-        Venue venue = new Venue();
-        venue.setName(venueDTO.getName());
-        venue.setFullAddress(venueDTO.getFullAddress());
-        venue.setPhone(venueDTO.getPhone());
-        venue.setOwner(getAuthUser(authentication));
-        venue.setOnline(venueDTO.isOnline());
-        venue.setOnlineProvider(venueDTO.getOnlineProvider());
-        venue.setLink(venueDTO.getLink());
-        venueRepository.save(venue);
-        return venue.getId().toString();
+        venueRepository.saveAll(venuesToSave);
+        return venuesToSave.stream().map(l -> l.getId().toString()).toList().toString();
     }
 
     public List<Venue> createWithoutValidation(List<VenueCreateDTO> venueDTO, Authentication authentication) {
@@ -150,4 +158,8 @@ public class VenueService {
     public Venue getById(Long id) {
         return venueRepository.findByIdAndDeletedFalse(id).orElse(null);
     }
+
+
+
+
 }

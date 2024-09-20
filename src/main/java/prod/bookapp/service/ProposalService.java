@@ -75,48 +75,59 @@ public class ProposalService {
     }
 
     @Transactional
-    public String create(ProposalCreateDTO proposalCreateDTO, Authentication authentication) {
-        var venueIds = proposalCreateDTO.getVenueIds();
-        var owner = getAuthUser(authentication);
-        List<Venue> propVenues = new ArrayList<>();
-        for (var venueId : venueIds) {
-            var venue = venueService.findByIdAndOwnerAndDeletedFalse(venueId, owner);
-            if (venue == null) {
-                return "Error: Venue not found";
+    public String createAll(List<ProposalCreateDTO> proposalCreateDTOs, Authentication authentication){
+        List<Proposal> propsToSave = new ArrayList<>();
+        for (ProposalCreateDTO proposalCreateDTO : proposalCreateDTOs) {
+            var venueIds = proposalCreateDTO.getVenueIds();
+            var owner = getAuthUser(authentication);
+            List<Venue> propVenues = new ArrayList<>();
+            for (var venueId : venueIds) {
+                var venue = venueService.findByIdAndOwnerAndDeletedFalse(venueId, owner);
+                if (venue == null) {
+                    return "Error: Venue not found";
+                }
+                propVenues.add(venue);
             }
-            propVenues.add(venue);
+            var validationResult = validateProposalDTO(proposalCreateDTO, propVenues);
+            if (validationResult != null) {
+                return validationResult;
+            }
+            Proposal proposal = new Proposal();
+            proposal.setOwner(getAuthUser(authentication));
+            proposal.setName(proposalCreateDTO.getName());
+            proposal.setDescription(proposalCreateDTO.getDescription());
+            proposal.setDurationMin(proposalCreateDTO.getDuration());
+            proposal.setOnline(proposalCreateDTO.isOnline());
+            proposal.setVenues(propVenues);
+            propsToSave.add(proposal);
         }
-        var validationResult = validateProposalDTO(proposalCreateDTO, propVenues);
-        if (validationResult != null) {
-            return validationResult;
-        }
-        Proposal proposal = new Proposal();
-        proposal.setOwner(getAuthUser(authentication));
-        proposal.setName(proposalCreateDTO.getName());
-        proposal.setDescription(proposalCreateDTO.getDescription());
-        proposal.setDurationMin(proposalCreateDTO.getDuration());
-        proposal.setOnline(proposalCreateDTO.isOnline());
-        proposal.setVenues(propVenues);
-        proposalRepository.save(proposal);
-        return proposal.getId().toString();
+        proposalRepository.saveAll(propsToSave);
+        return propsToSave.stream().map(l -> l.getId().toString()).toList().toString();
     }
 
     @Transactional
-    public String createWithVenue(ProposalCreateWVenueDTO proposalCreateWVenueDTO, Authentication authentication) {
-        List<VenueCreateDTO> propVenues = proposalCreateWVenueDTO.getVenues();
-        var validationResult = validateProposalWithVenueDTO(proposalCreateWVenueDTO, propVenues);
-        if (validationResult != null) {
-            return validationResult;
+    public String createAllWithVenue(List<ProposalCreateWVenueDTO> proposalCreateWVenueDTOs, Authentication authentication){
+        List<Proposal> propsToSave = new ArrayList<>();
+        for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
+            List<VenueCreateDTO> propVenues = proposalCreateWVenueDTO.getVenues();
+            var validationResult = validateProposalWithVenueDTO(proposalCreateWVenueDTO, propVenues);
+            if (validationResult != null) {
+                return validationResult;
+            }
         }
-        Proposal proposal = new Proposal();
-        proposal.setOwner(getAuthUser(authentication));
-        proposal.setName(proposalCreateWVenueDTO.getName());
-        proposal.setDescription(proposalCreateWVenueDTO.getDescription());
-        proposal.setDurationMin(proposalCreateWVenueDTO.getDuration());
-        proposal.setOnline(proposalCreateWVenueDTO.isOnline());
-        proposal.setVenues(venueService.createWithoutValidation(propVenues, authentication));
-        proposalRepository.save(proposal);
-        return proposal.getId().toString();
+        for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
+            Proposal proposal = new Proposal();
+            proposal.setOwner(getAuthUser(authentication));
+            proposal.setName(proposalCreateWVenueDTO.getName());
+            proposal.setDescription(proposalCreateWVenueDTO.getDescription());
+            proposal.setDurationMin(proposalCreateWVenueDTO.getDuration());
+            proposal.setOnline(proposalCreateWVenueDTO.isOnline());
+            proposal.setVenues(venueService.createWithoutValidation(proposalCreateWVenueDTO.getVenues(), authentication));
+
+            propsToSave.add(proposal);
+        }
+        proposalRepository.saveAll(propsToSave);
+        return propsToSave.stream().map(l -> l.getId().toString()).toList().toString();
     }
 
     @Transactional

@@ -13,6 +13,7 @@ import prod.bookapp.enums.ResultWrapper;
 import prod.bookapp.service.VenueService;
 import prod.bookapp.wraper.ApiResponse;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -31,9 +32,9 @@ public class VenueController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Object>> create(
-            @RequestBody VenueCreateDTO venueCreateDTO
+            @RequestBody List<VenueCreateDTO> venueCreateDTOs
     ) {
-        var result = venueService.create(venueCreateDTO, getAuth());
+        var result = venueService.createAll(venueCreateDTOs, getAuth());
         return ResultWrapper.getResponse(result);
     }
 
