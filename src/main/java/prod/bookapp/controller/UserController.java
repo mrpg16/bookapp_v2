@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prod.bookapp.dto.UserRegisterDTO;
-import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.UserService;
 import prod.bookapp.wraper.ApiResponse;
 

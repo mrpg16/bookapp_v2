@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.AppointmentBookDTO;
-import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.AppointmentService;
 import prod.bookapp.service.BookingService;
 import prod.bookapp.wraper.ApiResponse;

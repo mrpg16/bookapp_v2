@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.VenueCreateDTO;
 import prod.bookapp.dto.VenueViewDTO;
-import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.VenueService;
 import prod.bookapp.wraper.ApiResponse;
 

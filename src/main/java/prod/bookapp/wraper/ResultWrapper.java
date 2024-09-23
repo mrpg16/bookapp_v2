@@ -1,10 +1,9 @@
-package prod.bookapp.enums;
+package prod.bookapp.wraper;
 
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import prod.bookapp.dto.UserAuthResponseDTO;
-import prod.bookapp.wraper.ApiResponse;
 
 import java.util.Collection;
 

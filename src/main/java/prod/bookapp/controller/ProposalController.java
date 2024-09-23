@@ -10,7 +10,7 @@ import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.ProposalCreateDTO;
 import prod.bookapp.dto.ProposalCreateWVenueDTO;
 import prod.bookapp.dto.ProposalUpdateDTO;
-import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.ProposalService;
 import prod.bookapp.wraper.ApiResponse;
 

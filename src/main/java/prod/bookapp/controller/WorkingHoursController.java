@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.dto.WorkingHoursCreateDTO;
-import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.WorkingHoursService;
 import prod.bookapp.wraper.ApiResponse;
 
