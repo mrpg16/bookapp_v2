@@ -40,7 +40,7 @@ public class VenueService {
                 return "Error: Link or provider is empty for the online venue";
             }
             var providers = Enums.getOnlineProviders();
-            if(providers.stream().noneMatch(p->p.equals(venueDTO.getOnlineProvider()))){
+            if (providers.stream().noneMatch(p -> p.equals(venueDTO.getOnlineProvider()))) {
                 return "Error: Venue provider not found";
             }
         } else {
@@ -158,8 +158,6 @@ public class VenueService {
     public Venue getById(Long id) {
         return venueRepository.findByIdAndDeletedFalse(id).orElse(null);
     }
-
-
 
 
 }

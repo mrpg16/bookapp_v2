@@ -3,6 +3,7 @@ package prod.bookapp.enums;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import prod.bookapp.dto.UserAuthResponseDTO;
 import prod.bookapp.wraper.ApiResponse;
 
 import java.util.Collection;
@@ -16,6 +17,12 @@ public class ResultWrapper {
             if (strResponse.contains("Error:")) {
                 return ResponseEntity.badRequest().body(new ApiResponse<>(strResponse));
             }
+            if (strResponse.contains("Error: Token is incorrect")) {
+                return new ResponseEntity<>(new ApiResponse<>(strResponse), HttpStatus.UNAUTHORIZED);
+            }
+            if (strResponse.contains("Error: Token is expired")) {
+                return new ResponseEntity<>(new ApiResponse<>(strResponse), HttpStatus.UNAUTHORIZED);
+            }
             return ResponseEntity.ok(new ApiResponse<>("Success", strResponse));
         }
         if (response == null) {
@@ -28,6 +35,11 @@ public class ResultWrapper {
         }
         if (response instanceof Object[] array) {
             if (array.length == 0) {
+                return new ResponseEntity<>(new ApiResponse<>("not found"), HttpStatus.NOT_FOUND);
+            }
+        }
+        if (response instanceof UserAuthResponseDTO respDTO) {
+            if (respDTO.getAccessToken().contains("Error:") && respDTO.getAccessToken().contains("not found")) {
                 return new ResponseEntity<>(new ApiResponse<>("not found"), HttpStatus.NOT_FOUND);
             }
         }

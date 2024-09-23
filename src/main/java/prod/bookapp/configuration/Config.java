@@ -2,17 +2,19 @@ package prod.bookapp.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+import prod.bookapp.jwt.JwtRequestFilter;
 
 import java.util.Collections;
 
@@ -25,10 +27,17 @@ public class Config {
     private static final String LOGIN_URL = "/login";
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationSuccessHandlerBasic customAuthenticationSuccessHandlerBasic;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    public Config(AuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationSuccessHandlerBasic customAuthenticationSuccessHandlerBasic) {
+    public Config(AuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationSuccessHandlerBasic customAuthenticationSuccessHandlerBasic, JwtRequestFilter jwtRequestFilter) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationSuccessHandlerBasic = customAuthenticationSuccessHandlerBasic;
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -47,8 +56,7 @@ public class Config {
                         .requestMatchers(antMatcher("/login/**")).permitAll()
                         .requestMatchers(antMatcher("/")).permitAll()
                         .requestMatchers(antMatcher("/timeslot/free/**")).permitAll()
-                        .requestMatchers(antMatcher("/auth/isAuthenticated")).permitAll()
-                        .requestMatchers(antMatcher("/auth/type")).permitAll()
+                        .requestMatchers(antMatcher("/auth/**")).permitAll()
                         .requestMatchers(antMatcher("/proposal/worker/**")).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -63,15 +71,9 @@ public class Config {
                                 .successHandler(customAuthenticationSuccessHandlerBasic)
                                 .loginPage(LOGIN_URL)
                                 .permitAll())
-                .httpBasic((basic) -> basic //TODO check how will it work with browser (need to store basic creds in the cookies)
-                        .addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
-                            @Override
-                            public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
-                                filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
-                                return filter;
-                            }
-                        })
-                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

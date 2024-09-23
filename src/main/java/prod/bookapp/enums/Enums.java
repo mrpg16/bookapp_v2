@@ -21,8 +21,8 @@ public enum Enums {
     APPOINTMENT_STATUS_CONFIRMED("confirmed"),
     APPOINTMENT_STATUS_REJECTED("rejected"),
 
-    ONLINE_PROVIDER_ZOOM("ZOOM")
-    ;
+    ONLINE_PROVIDER_ZOOM("ZOOM");
+
     private String value;
 
     public static List<String> getOnlineProviders() {

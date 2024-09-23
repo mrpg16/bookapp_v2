@@ -4,13 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import prod.bookapp.entity.User;
+import prod.bookapp.jwt.JwtUtil;
 import prod.bookapp.repository.UserRepository;
 
 import java.io.IOException;
@@ -20,10 +21,13 @@ import java.time.LocalDateTime;
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
-    private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+    private final JwtUtil jwtUtil;
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public CustomAuthenticationSuccessHandler(UserRepository userRepository) {
+    public CustomAuthenticationSuccessHandler(UserRepository userRepository, JwtUtil jwtUtil, OAuth2AuthorizedClientService authorizedClientService) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.authorizedClientService = authorizedClientService;
     }
 
     @Override
@@ -31,8 +35,16 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                oauthToken.getAuthorizedClientRegistrationId(),
+                oauthToken.getName()
+        );
+
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+        String accessToken = authorizedClient.getAccessToken().getTokenValue();
+        String refreshToken = authorizedClient.getRefreshToken() != null ? authorizedClient.getRefreshToken().getTokenValue() : null;
         boolean emailVerified = Boolean.TRUE.equals(oAuth2User.getAttribute("email_verified"));
         String provider = oauthToken.getAuthorizedClientRegistrationId();
 
@@ -46,6 +58,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             user.setLastLogin(LocalDateTime.now());
             user.setEmailVerified(emailVerified);
             user.setIp(request.getRemoteAddr());
+            user.setOauth2AccessToken(accessToken);
+            user.setOauth2RefreshToken(refreshToken);
             userRepository.save(user);
         } else {
             user.setLastLogin(LocalDateTime.now());
@@ -53,12 +67,16 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             user.setEmailVerified(emailVerified);
             user.setProvider(provider);
             user.setIp(request.getRemoteAddr());
+            user.setOauth2AccessToken(accessToken);
+            user.setOauth2RefreshToken(refreshToken);
             userRepository.save(user);
         }
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-//        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/home";
-        String targetUrl = "http://localhost:5173/";
-        response.sendRedirect(targetUrl);
-//TODO change redirect url domain to frontend not backend!
+        String jwtToken = jwtUtil.generateToken(email);
+        String jwtRefreshToken = jwtUtil.generateRefreshToken(email);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Authorization", "Bearer " + jwtToken);
+        response.getWriter().write("{\"accessToken\": \"" + jwtToken + "\", \"refreshToken\": \"" + jwtRefreshToken + "\"}");
+        response.getWriter().flush();
     }
 }

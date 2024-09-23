@@ -29,6 +29,8 @@ public class User implements UserDetails {
     private LocalDateTime lastLogin;
     private boolean emailVerified = false;
     private String ip;
+    private String oauth2AccessToken;
+    private String oauth2RefreshToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

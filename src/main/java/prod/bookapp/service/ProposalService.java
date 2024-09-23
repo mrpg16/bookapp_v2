@@ -75,7 +75,7 @@ public class ProposalService {
     }
 
     @Transactional
-    public String createAll(List<ProposalCreateDTO> proposalCreateDTOs, Authentication authentication){
+    public String createAll(List<ProposalCreateDTO> proposalCreateDTOs, Authentication authentication) {
         List<Proposal> propsToSave = new ArrayList<>();
         for (ProposalCreateDTO proposalCreateDTO : proposalCreateDTOs) {
             var venueIds = proposalCreateDTO.getVenueIds();
@@ -106,7 +106,7 @@ public class ProposalService {
     }
 
     @Transactional
-    public String createAllWithVenue(List<ProposalCreateWVenueDTO> proposalCreateWVenueDTOs, Authentication authentication){
+    public String createAllWithVenue(List<ProposalCreateWVenueDTO> proposalCreateWVenueDTOs, Authentication authentication) {
         List<Proposal> propsToSave = new ArrayList<>();
         for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
             List<VenueCreateDTO> propVenues = proposalCreateWVenueDTO.getVenues();

@@ -71,7 +71,7 @@ public class TimeSlotController {
     ) {
         User worker = userService.getUserById(workerId);
         Proposal proposal = proposalService.getProposalByIdAndOwner(proposalId, worker);
-        if(proposal == null) {
+        if (proposal == null) {
             return ResultWrapper.getResponse("Error: proposal not found");
         }
         List<VenueViewDTO> venues = venueViewDTOConverter.convertToViewDTO(proposal.getVenues());

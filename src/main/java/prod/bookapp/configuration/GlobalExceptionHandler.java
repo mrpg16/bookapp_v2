@@ -1,46 +1,62 @@
 package prod.bookapp.configuration;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import prod.bookapp.enums.ResultWrapper;
+import prod.bookapp.wraper.ApiResponse;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleMissingParams(MissingServletRequestParameterException ex) {
         String parameterName = ex.getParameterName();
         String message = "Required request parameter '" + parameterName + "' is missing.";
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return ResultWrapper.getResponse(message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .findFirst()
                 .orElse("Invalid input.");
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return ResultWrapper.getResponse(message);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         String message = ex.getMessage();
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return ResultWrapper.getResponse(message);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        String message = "An unexpected error occurred.";
-        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJwtSignature(SignatureException ex) {
+        String message = "Error: Token is incorrect: " + ex.getMessage();
+        return ResultWrapper.getResponse(message);
     }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse<Object>> handleJwtExpired(SignatureException ex) {
+        String message = "Error: Token is expired: " + ex.getMessage();
+        return ResultWrapper.getResponse(message);
+    }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex) {
+//        String message = ex.getMessage();
+//        return ResultWrapper.getResponse(message);
+//    }
+
 
 }
