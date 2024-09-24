@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 import prod.bookapp.jwt.JwtRequestFilter;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -83,7 +84,7 @@ public class Config {
             org.springframework.web.cors.CorsConfiguration config =
                     new org.springframework.web.cors.CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
-            config.setAllowedMethods(Collections.singletonList("*"));
+            config.setAllowedMethods(Arrays.asList("GET", "POST"));
             config.setAllowedOriginPatterns(Collections.singletonList("*")); //config.setAllowedOriginPatterns(Arrays.asList("https://frontend-domain.com", "https://frontend-domain2.com"));
             config.setAllowCredentials(true);
             return config;
