@@ -41,12 +41,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SignatureException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ApiResponse<Object>> handleJwtSignature(SignatureException ex) {
         String message = "Error: Token is incorrect: " + ex.getMessage();
         return ResultWrapper.getResponse(message);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<ApiResponse<Object>> handleJwtExpired(ExpiredJwtException ex) {
         String message = "Error: Token is expired: " + ex.getMessage();
         return ResultWrapper.getResponse(message);

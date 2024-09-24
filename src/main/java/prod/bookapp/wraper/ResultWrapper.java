@@ -13,14 +13,14 @@ public class ResultWrapper {
             if (strResponse.contains("Error:") && strResponse.contains("not found")) {
                 return new ResponseEntity<>(new ApiResponse<>(strResponse), HttpStatus.NOT_FOUND);
             }
-            if (strResponse.contains("Error:")) {
-                return ResponseEntity.badRequest().body(new ApiResponse<>(strResponse));
-            }
             if (strResponse.contains("Error: Token is incorrect")) {
                 return new ResponseEntity<>(new ApiResponse<>(strResponse), HttpStatus.UNAUTHORIZED);
             }
             if (strResponse.contains("Error: Token is expired")) {
                 return new ResponseEntity<>(new ApiResponse<>(strResponse), HttpStatus.UNAUTHORIZED);
+            }
+            if (strResponse.contains("Error:")) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(strResponse));
             }
             return ResponseEntity.ok(new ApiResponse<>("Success", strResponse));
         }
