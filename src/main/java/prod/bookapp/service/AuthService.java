@@ -38,12 +38,12 @@ public class AuthService {
     }
 
     public UserAuthResponseRefreshDTO refreshToken(UserAuthRequestRefreshDTO userAuthRequestRefreshDTO) {
-            if (jwtUtil.isTokenExpired(userAuthRequestRefreshDTO.getRefreshToken())) {
-                return null;
-            }
-            var username = jwtUtil.getUsernameFromToken(userAuthRequestRefreshDTO.getRefreshToken());
-            var accessToken = jwtUtil.generateToken(username);
-            return new UserAuthResponseRefreshDTO(accessToken);
+        if (jwtUtil.isTokenExpired(userAuthRequestRefreshDTO.getRefreshToken())) {
+            return null;
+        }
+        var username = jwtUtil.getUsernameFromToken(userAuthRequestRefreshDTO.getRefreshToken());
+        var accessToken = jwtUtil.generateToken(username);
+        return new UserAuthResponseRefreshDTO(accessToken);
     }
 
 

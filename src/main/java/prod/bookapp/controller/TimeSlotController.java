@@ -17,11 +17,11 @@ import prod.bookapp.dto.converter.VenueViewDTOConverter;
 import prod.bookapp.dto.customResponse.FreeSlotsSearchDTO;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
-import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.ProposalService;
 import prod.bookapp.service.TimeSlotService;
 import prod.bookapp.service.UserService;
 import prod.bookapp.wraper.ApiResponse;
+import prod.bookapp.wraper.ResultWrapper;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -10,8 +10,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.wraper.ApiResponse;
+import prod.bookapp.wraper.ResultWrapper;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

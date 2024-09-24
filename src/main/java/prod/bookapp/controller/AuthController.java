@@ -9,9 +9,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.dto.UserAuthRequestDTO;
 import prod.bookapp.dto.UserAuthRequestRefreshDTO;
-import prod.bookapp.wraper.ResultWrapper;
 import prod.bookapp.service.AuthService;
 import prod.bookapp.wraper.ApiResponse;
+import prod.bookapp.wraper.ResultWrapper;
 
 @RestController
 @RequestMapping("/auth")

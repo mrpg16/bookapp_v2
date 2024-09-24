@@ -55,7 +55,7 @@ public class ProposalService {
         return null;
     }
 
-    private String validateProposalWithVenueDTO(ProposalDTO proposalDTO, List<VenueCreateDTO> venueDTO) {
+    String validateProposalWithVenueDTO(ProposalDTO proposalDTO, List<VenueCreateDTO> venueDTO) {
         for (VenueDTO v : venueDTO) {
             if (proposalDTO.isOnline() != v.isOnline()) {
                 return "Error: Venue type mismatch";
@@ -126,8 +126,12 @@ public class ProposalService {
 
             propsToSave.add(proposal);
         }
-        proposalRepository.saveAll(propsToSave);
+        saveAll(propsToSave);
         return propsToSave.stream().map(l -> l.getId().toString()).toList().toString();
+    }
+
+    void saveAll(List<Proposal> props) {
+        proposalRepository.saveAll(props);
     }
 
     @Transactional

@@ -45,7 +45,7 @@ public class WorkingHoursService {
         return list.stream().anyMatch(x -> x.getStartTime().isAfter(x.getEndTime()) || x.getEndTime().equals(x.getStartTime()));
     }
 
-    private String validateWH(List<WorkingHoursCreateDTO> whDTOList) {
+    String validateWH(List<WorkingHoursCreateDTO> whDTOList) {
         if (hasTimeIssue(whDTOList)) {
             return "Error: Sorry, but you have time issues";
         }
@@ -55,6 +55,18 @@ public class WorkingHoursService {
         return null;
     }
 
+    List<WorkingHours> getAllByOwner(User owner) {
+        return workingHoursRepository.findAllByOwner(owner);
+    }
+
+    void deleteAllByOwner(User owner) {
+        workingHoursRepository.deleteAllByOwner(owner);
+    }
+
+    void saveAll(List<WorkingHours> workingHoursList) {
+        workingHoursRepository.saveAll(workingHoursList);
+    }
+
     @Transactional
     public String createOrUpdate(List<WorkingHoursCreateDTO> whDTOList, Authentication authentication) {
         var validationResult = validateWH(whDTOList);
@@ -62,9 +74,9 @@ public class WorkingHoursService {
             return validationResult;
         }
         User owner = getAuthUser(authentication);
-        List<WorkingHours> existedWH = workingHoursRepository.findAllByOwner(owner);
+        List<WorkingHours> existedWH = getAllByOwner(owner);
         if (!existedWH.isEmpty()) {
-            workingHoursRepository.deleteAllByOwner(owner);
+            deleteAllByOwner(owner);
         }
         List<WorkingHours> whList = new ArrayList<>();
         for (WorkingHoursCreateDTO whDTO : whDTOList) {
@@ -76,7 +88,7 @@ public class WorkingHoursService {
             whList.add(workingHours);
         }
 
-        workingHoursRepository.saveAll(whList);
+        saveAll(whList);
         return whList.stream().map(l -> l.getId().toString()).toList().toString();
     }
 
