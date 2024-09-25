@@ -32,4 +32,6 @@ public class Proposal {
     @Fetch(FetchMode.JOIN)
     private List<Venue> venues;
     private boolean deleted = false;
+    private Double price;
+    private String currency;
 }

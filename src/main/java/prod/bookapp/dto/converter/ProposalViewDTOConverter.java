@@ -11,11 +11,9 @@ import java.util.List;
 @Component
 public class ProposalViewDTOConverter {
     private final VenueViewDTOConverter venueViewDTOConverter;
-    private final UserViewDTOConverter userViewDTOConverter;
 
-    public ProposalViewDTOConverter(VenueViewDTOConverter venueViewDTOConverter, UserViewDTOConverter userViewDTOConverter) {
+    public ProposalViewDTOConverter(VenueViewDTOConverter venueViewDTOConverter) {
         this.venueViewDTOConverter = venueViewDTOConverter;
-        this.userViewDTOConverter = userViewDTOConverter;
     }
 
     public ProposalViewDTO convertToProposalViewDTO(Proposal proposal) {
@@ -26,6 +24,8 @@ public class ProposalViewDTOConverter {
         proposalViewDTO.setDuration(proposal.getDurationMin());
         proposalViewDTO.setVenues(venueViewDTOConverter.convertToViewDTO(proposal.getVenues()));
         proposalViewDTO.setOnline(proposal.isOnline());
+        proposalViewDTO.setPrice(proposal.getPrice());
+        proposalViewDTO.setCurrency(proposal.getCurrency());
         return proposalViewDTO;
     }
 
@@ -44,14 +44,8 @@ public class ProposalViewDTOConverter {
         proposalAppointmentViewDTO.setDescription(proposal.getDescription());
         proposalAppointmentViewDTO.setDuration(proposal.getDurationMin());
         proposalAppointmentViewDTO.setOnline(proposal.isOnline());
+        proposalAppointmentViewDTO.setPrice(proposal.getPrice());
+        proposalAppointmentViewDTO.setCurrency(proposal.getCurrency());
         return proposalAppointmentViewDTO;
-    }
-
-    public List<ProposalAppointmentViewDTO> convertToProposalBookingViewDTO(List<Proposal> proposals) {
-        List<ProposalAppointmentViewDTO> proposalViewDTOList = new ArrayList<>();
-        for (Proposal proposal : proposals) {
-            proposalViewDTOList.add(convertToProposalBookingViewDTO(proposal));
-        }
-        return proposalViewDTOList;
     }
 }

@@ -35,6 +35,7 @@ public class User implements UserDetails {
     private String ip;
     private String oauth2AccessToken;
     private String oauth2RefreshToken;
+    private String defaultCurrency;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

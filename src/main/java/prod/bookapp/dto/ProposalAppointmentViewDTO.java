@@ -15,4 +15,6 @@ public class ProposalAppointmentViewDTO {
     private String description;
     private int duration;
     private boolean online;
+    private Double price;
+    private String currency;
 }

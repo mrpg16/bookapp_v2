@@ -18,4 +18,6 @@ public class ProposalCreateWVenueDTO implements ProposalDTO {
     private int duration;
     private List<VenueCreateDTO> venues;
     private boolean online;
+    private Double price;
+    private String currency;
 }

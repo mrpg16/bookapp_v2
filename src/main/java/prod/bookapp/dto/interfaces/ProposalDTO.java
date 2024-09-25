@@ -6,4 +6,8 @@ public interface ProposalDTO {
     int getDuration();
 
     boolean isOnline();
+
+    Double getPrice();
+
+    String getCurrency();
 }

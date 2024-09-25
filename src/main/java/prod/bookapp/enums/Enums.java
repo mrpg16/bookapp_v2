@@ -21,13 +21,28 @@ public enum Enums {
     APPOINTMENT_STATUS_CONFIRMED("confirmed"),
     APPOINTMENT_STATUS_REJECTED("rejected"),
 
-    ONLINE_PROVIDER_ZOOM("ZOOM");
+    ONLINE_PROVIDER_ZOOM("ZOOM"),
+
+    CURRENCY_USD("USD"),
+    CURRENCY_EUR("EUR"),
+    CURRENCY_GBP("GBP"),
+    CURRENCY_AUD("AUD"),
+    CURRENCY_JPY("JPY"),
+    CURRENCY_RSD("RSD"),
+    ;
 
     private String value;
 
     public static List<String> getOnlineProviders() {
         return Arrays.stream(Enums.values())
                 .filter(e -> e.name().startsWith("ONLINE_PROVIDER"))
+                .map(Enums::getValue)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getCurrencies() {
+        return Arrays.stream(Enums.values())
+                .filter(e -> e.name().startsWith("CURRENCY"))
                 .map(Enums::getValue)
                 .collect(Collectors.toList());
     }

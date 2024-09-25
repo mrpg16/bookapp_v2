@@ -11,6 +11,7 @@ import prod.bookapp.dto.interfaces.VenueDTO;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
+import prod.bookapp.enums.Enums;
 import prod.bookapp.repository.ProposalRepository;
 import prod.bookapp.repository.UserRepository;
 
@@ -47,11 +48,23 @@ public class ProposalService {
         if (proposalDTO.getDuration() <= 0) {
             return "Error: Duration cannot be <= 0";
         }
+        var price = proposalDTO.getPrice();
+        var cur = proposalDTO.getCurrency();
+
+        if (price != null && price >= 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
+            if (!Enums.getCurrencies().contains(cur)) {
+                return "Error: Invalid currency";
+            }
+        } else {
+            return "Error: Invalid price or currency";
+        }
+
         for (Venue v : venue) {
             if (proposalDTO.isOnline() != v.isOnline()) {
                 return "Error: Venue type mismatch";
             }
         }
+
         return null;
     }
 
@@ -70,6 +83,16 @@ public class ProposalService {
         }
         if (proposalDTO.getDuration() <= 0) {
             return "Error: Duration cannot be <= 0";
+        }
+        var price = proposalDTO.getPrice();
+        var cur = proposalDTO.getCurrency();
+
+        if (price != null && price > 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
+            if (!Enums.getCurrencies().contains(cur)) {
+                return "Error: Invalid currency";
+            }
+        } else {
+            return "Error: Invalid price or currency";
         }
         return null;
     }
@@ -102,6 +125,8 @@ public class ProposalService {
             proposal.setDurationMin(proposalCreateDTO.getDuration());
             proposal.setOnline(proposalCreateDTO.isOnline());
             proposal.setVenues(propVenues);
+            proposal.setPrice(proposalCreateDTO.getPrice());
+            proposal.setCurrency(proposalCreateDTO.getCurrency());
             propsToSave.add(proposal);
         }
         proposalRepository.saveAll(propsToSave);
@@ -129,7 +154,8 @@ public class ProposalService {
             proposal.setDurationMin(proposalCreateWVenueDTO.getDuration());
             proposal.setOnline(proposalCreateWVenueDTO.isOnline());
             proposal.setVenues(venueService.createWithoutValidation(proposalCreateWVenueDTO.getVenues(), authentication));
-
+            proposal.setPrice(proposalCreateWVenueDTO.getPrice());
+            proposal.setCurrency(proposalCreateWVenueDTO.getCurrency());
             propsToSave.add(proposal);
         }
         saveAll(propsToSave);

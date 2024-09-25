@@ -18,4 +18,5 @@ public class UserRegisterDTO {
     private String phoneNumber;
     private String shortDescription;
     private String description;
+    private String defaultCurrency;
 }

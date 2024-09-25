@@ -16,4 +16,10 @@ public class EnumController {
         var result = Enums.getOnlineProviders();
         return ResultWrapper.getResponse(result);
     }
+
+    @GetMapping("/currencies")
+    public ResponseEntity<ApiResponse<Object>> getAllCurrencies() {
+        var result = Enums.getCurrencies();
+        return ResultWrapper.getResponse(result);
+    }
 }

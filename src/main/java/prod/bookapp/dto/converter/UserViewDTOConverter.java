@@ -16,6 +16,7 @@ public class UserViewDTOConverter {
         userViewDTO.setPhoneNumber(user.getPhoneNumber());
         userViewDTO.setShortDescription(user.getShortDescription());
         userViewDTO.setDescription(user.getDescription());
+        userViewDTO.setDefaultCurrency(user.getDefaultCurrency());
         return userViewDTO;
     }
 }

@@ -18,4 +18,6 @@ public class ProposalViewDTO {
     private int duration;
     private List<VenueViewDTO> venues;
     private boolean online;
+    private Double price;
+    private String currency;
 }

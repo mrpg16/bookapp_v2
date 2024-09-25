@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import prod.bookapp.configuration.PaginationUtils;
 import prod.bookapp.dto.TimeSlotDTO;
-import prod.bookapp.dto.VenueViewDTO;
-import prod.bookapp.dto.converter.VenueViewDTOConverter;
+import prod.bookapp.dto.converter.ProposalViewDTOConverter;
+import prod.bookapp.dto.converter.UserViewDTOConverter;
 import prod.bookapp.dto.customResponse.FreeSlotsSearchDTO;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
@@ -32,13 +32,15 @@ public class TimeSlotController {
     private final TimeSlotService timeSlotService;
     private final ProposalService proposalService;
     private final UserService userService;
-    private final VenueViewDTOConverter venueViewDTOConverter;
+    private final ProposalViewDTOConverter proposalViewDTOConverter;
+    private final UserViewDTOConverter userViewDTOConverter;
 
-    public TimeSlotController(TimeSlotService timeSlotService, ProposalService proposalService, UserService userService, VenueViewDTOConverter venueViewDTOConverter) {
+    public TimeSlotController(TimeSlotService timeSlotService, ProposalService proposalService, UserService userService, ProposalViewDTOConverter proposalViewDTOConverter, UserViewDTOConverter userViewDTOConverter) {
         this.timeSlotService = timeSlotService;
         this.proposalService = proposalService;
         this.userService = userService;
-        this.venueViewDTOConverter = venueViewDTOConverter;
+        this.proposalViewDTOConverter = proposalViewDTOConverter;
+        this.userViewDTOConverter = userViewDTOConverter;
     }
 
     private Authentication getAuth() {
@@ -74,7 +76,6 @@ public class TimeSlotController {
         if (proposal == null) {
             return ResultWrapper.getResponse("Error: proposal not found");
         }
-        List<VenueViewDTO> venues = venueViewDTOConverter.convertToViewDTO(proposal.getVenues());
         Page<TimeSlotDTO> paginatedSlots;
         List<TimeSlotDTO> slots;
         if (dateFrom.equals(dateTo)) {
@@ -83,7 +84,9 @@ public class TimeSlotController {
             slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId);
         }
         paginatedSlots = PaginationUtils.paginate(slots, pageable);
-        var result = new FreeSlotsSearchDTO(new PagedModel<>(paginatedSlots), workerId, proposalId, venues);
+        var workerDTO = userViewDTOConverter.convertToUserViewDTO(worker);
+        var proposalDTO = proposalViewDTOConverter.convertToProposalViewDTO(proposal);
+        var result = new FreeSlotsSearchDTO(new PagedModel<>(paginatedSlots), workerDTO, proposalDTO);
         return ResultWrapper.getResponse(result);
     }
 
