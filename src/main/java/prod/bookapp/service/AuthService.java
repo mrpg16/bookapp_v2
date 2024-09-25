@@ -46,5 +46,10 @@ public class AuthService {
         return new UserAuthResponseRefreshDTO(accessToken);
     }
 
+    public boolean isValidToken(String token) {
+        var username = jwtUtil.getUsernameFromToken(token);
+        return jwtUtil.validateToken(token, username);
+    }
+
 
 }

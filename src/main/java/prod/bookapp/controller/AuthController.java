@@ -1,11 +1,7 @@
 package prod.bookapp.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.dto.UserAuthRequestDTO;
 import prod.bookapp.dto.UserAuthRequestRefreshDTO;
@@ -22,11 +18,6 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
-    }
-
-
-    private Authentication getAuth() {
-        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     @PostMapping("/login")
@@ -46,31 +37,12 @@ public class AuthController {
         return ResultWrapper.getResponse(result);
     }
 
-    @GetMapping("/isAuthenticated")
-    public ResponseEntity<ApiResponse<Object>> isAuthenticated() {
-        var result = getAuth();
-        if (!result.isAuthenticated() || result.getPrincipal().equals("anonymousUser")) {
-            return ResultWrapper.getResponse(false);
-        }
-        return ResultWrapper.getResponse(true);
-    }
-
-    @GetMapping("/type")
-    public ResponseEntity<ApiResponse<Object>> getAuthType() {
-        Authentication auth = getAuth();
-        if (auth == null) {
-            var result = "not authenticated";
-            return ResultWrapper.getResponse(result);
-        }
-        if (auth instanceof OAuth2AuthenticationToken) {
-            var result = "oauth2";
-            return ResultWrapper.getResponse(result);
-        }
-        if (auth instanceof UsernamePasswordAuthenticationToken) {
-            var result = "jwt";
-            return ResultWrapper.getResponse(result);
-        }
-        var result = "not authenticated";
+    @PostMapping("/check")
+    public ResponseEntity<ApiResponse<Object>> checkAuthenticationToken(
+            @RequestParam String token
+    ) {
+        var result = authService.isValidToken(token);
         return ResultWrapper.getResponse(result);
     }
+
 }

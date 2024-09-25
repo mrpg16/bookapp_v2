@@ -10,6 +10,7 @@ import prod.bookapp.dto.interfaces.VenueDTO;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
 import prod.bookapp.enums.Enums;
+import prod.bookapp.repository.ProposalRepository;
 import prod.bookapp.repository.VenueRepository;
 
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ import java.util.List;
 public class VenueService {
     private final VenueRepository venueRepository;
     private final VenueViewDTOConverter venueViewDTOConverter;
+    private final ProposalRepository proposalRepository;
 
-    public VenueService(VenueRepository venueRepository, VenueViewDTOConverter venueViewDTOConverter) {
+    public VenueService(VenueRepository venueRepository, VenueViewDTOConverter venueViewDTOConverter, ProposalRepository proposalRepository) {
         this.venueRepository = venueRepository;
         this.venueViewDTOConverter = venueViewDTOConverter;
+        this.proposalRepository = proposalRepository;
     }
 
     private User getAuthUser(Authentication authentication) {
@@ -119,6 +122,15 @@ public class VenueService {
         if (venue == null) {
             return "Error: Venue not found";
         }
+        var propsByVenue = proposalRepository.findAllByVenueAndDeletedFalse(venue);
+        var propsWith1Venue = propsByVenue.stream()
+                .filter(proposal -> proposal.getVenues().size() == 1)
+                .toList();
+        if (!propsWith1Venue.isEmpty()) {
+            return "Error: The venue cannot be deleted because it has been set as a the only venue for the following proposals: "
+                    + propsWith1Venue.stream().map(p -> p.getId().toString()).toList();
+        }
+
         venue.setDeleted(true);
         venueRepository.save(venue);
         return venue.getId().toString();

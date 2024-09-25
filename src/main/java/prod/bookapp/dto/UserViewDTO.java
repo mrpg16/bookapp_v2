@@ -14,4 +14,8 @@ public class UserViewDTO {
     private String email;
     private String firstName;
     private String lastName;
+    private String companyName;
+    private String phoneNumber;
+    private String shortDescription;
+    private String description;
 }

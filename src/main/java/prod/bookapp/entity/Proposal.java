@@ -21,6 +21,7 @@ public class Proposal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne()
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "owner_id")
     private User owner;
     private String name;

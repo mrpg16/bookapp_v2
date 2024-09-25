@@ -12,6 +12,10 @@ public class UserViewDTOConverter {
         userViewDTO.setFirstName(user.getFirstName());
         userViewDTO.setLastName(user.getLastName());
         userViewDTO.setEmail(user.getEmail());
+        userViewDTO.setCompanyName(user.getCompanyName());
+        userViewDTO.setPhoneNumber(user.getPhoneNumber());
+        userViewDTO.setShortDescription(user.getShortDescription());
+        userViewDTO.setDescription(user.getDescription());
         return userViewDTO;
     }
 }

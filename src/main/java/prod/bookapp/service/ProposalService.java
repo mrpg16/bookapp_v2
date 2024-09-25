@@ -79,6 +79,9 @@ public class ProposalService {
         List<Proposal> propsToSave = new ArrayList<>();
         for (ProposalCreateDTO proposalCreateDTO : proposalCreateDTOs) {
             var venueIds = proposalCreateDTO.getVenueIds();
+            if (venueIds == null || venueIds.length == 0) {
+                return "Error: Venue id cannot be empty";
+            }
             var owner = getAuthUser(authentication);
             List<Venue> propVenues = new ArrayList<>();
             for (var venueId : venueIds) {
@@ -110,6 +113,9 @@ public class ProposalService {
         List<Proposal> propsToSave = new ArrayList<>();
         for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
             List<VenueCreateDTO> propVenues = proposalCreateWVenueDTO.getVenues();
+            if (propVenues == null || propVenues.isEmpty()) {
+                return "Error: Venue cannot be empty";
+            }
             var validationResult = validateProposalWithVenueDTO(proposalCreateWVenueDTO, propVenues);
             if (validationResult != null) {
                 return validationResult;
@@ -175,7 +181,6 @@ public class ProposalService {
         proposalRepository.save(proposal);
         return proposal.getId().toString();
     }
-
 
     public Proposal getProposalByIdAndOwner(Long proposalId, User owner) {
         return proposalRepository.findByIdAndOwnerAndDeletedFalse(proposalId, owner).orElse(null);

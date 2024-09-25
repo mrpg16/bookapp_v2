@@ -11,9 +11,11 @@ import java.util.List;
 @Component
 public class ProposalViewDTOConverter {
     private final VenueViewDTOConverter venueViewDTOConverter;
+    private final UserViewDTOConverter userViewDTOConverter;
 
-    public ProposalViewDTOConverter(VenueViewDTOConverter venueViewDTOConverter) {
+    public ProposalViewDTOConverter(VenueViewDTOConverter venueViewDTOConverter, UserViewDTOConverter userViewDTOConverter) {
         this.venueViewDTOConverter = venueViewDTOConverter;
+        this.userViewDTOConverter = userViewDTOConverter;
     }
 
     public ProposalViewDTO convertToProposalViewDTO(Proposal proposal) {
@@ -52,5 +54,4 @@ public class ProposalViewDTOConverter {
         }
         return proposalViewDTOList;
     }
-
 }

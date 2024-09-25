@@ -1,5 +1,6 @@
 package prod.bookapp.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -7,29 +8,34 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.bookapp.configuration.PaginationUtils;
-import prod.bookapp.dto.ProposalCreateDTO;
-import prod.bookapp.dto.ProposalCreateWVenueDTO;
-import prod.bookapp.dto.ProposalUpdateDTO;
+import prod.bookapp.dto.*;
+import prod.bookapp.dto.converter.UserViewDTOConverter;
+import prod.bookapp.entity.User;
 import prod.bookapp.service.ProposalService;
+import prod.bookapp.service.UserService;
 import prod.bookapp.wraper.ApiResponse;
 import prod.bookapp.wraper.ResultWrapper;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/proposal")
+@RequestMapping()
 public class ProposalController {
     private final ProposalService proposalService;
+    private final UserService userService;
+    private final UserViewDTOConverter userViewDTOConverter;
 
-    public ProposalController(ProposalService proposalService) {
+    public ProposalController(ProposalService proposalService, UserService userService, UserViewDTOConverter userViewDTOConverter) {
         this.proposalService = proposalService;
+        this.userService = userService;
+        this.userViewDTOConverter = userViewDTOConverter;
     }
 
     private Authentication getAuth() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    @PostMapping()
+    @PostMapping("/proposal")
     public ResponseEntity<ApiResponse<Object>> create(
             @RequestBody List<ProposalCreateDTO> proposalCreateDTOs
     ) {
@@ -37,7 +43,7 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @PostMapping("/wVenue")
+    @PostMapping("/proposal/wVenue")
     public ResponseEntity<ApiResponse<Object>> createWithVenue(
             @RequestBody List<ProposalCreateWVenueDTO> proposalCreateWVenueDTOs
     ) {
@@ -45,7 +51,7 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @GetMapping
+    @GetMapping("/proposal")
     public ResponseEntity<ApiResponse<Object>> getAll(Pageable pageable) {
         var result = new PagedModel<>(PaginationUtils.paginate(
                 proposalService.getAll(getAuth()), pageable
@@ -53,7 +59,7 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/proposal/update")
     public ResponseEntity<ApiResponse<Object>> update(
             @RequestBody ProposalUpdateDTO proposalUpdateDTO
     ) {
@@ -61,7 +67,7 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/proposal/delete")
     public ResponseEntity<ApiResponse<Object>> delete(
             @RequestParam Long id
     ) {
@@ -69,7 +75,7 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/proposal/{id}")
     public ResponseEntity<ApiResponse<Object>> getById(
             @PathVariable Long id
     ) {
@@ -77,14 +83,26 @@ public class ProposalController {
         return ResultWrapper.getResponse(result);
     }
 
-    @GetMapping("/worker/{id}")
+    @GetMapping("/worker/{id}/proposal")
     public ResponseEntity<ApiResponse<Object>> getAllByWorkerId(
-            @PathVariable Long id) {
-        var result = proposalService.getAllByWorkerId(id);
+            @PathVariable Long id
+            , Pageable pageable
+    ) {
+        List<ProposalViewDTO> props = proposalService.getAllByWorkerId(id);
+        if (props.isEmpty()) {
+            return ResultWrapper.getResponse("Error: proposal not found");
+        }
+        User worker = userService.getUserById(id);
+        if (worker == null) {
+            return ResultWrapper.getResponse("Error: worker not found");
+        }
+        var workerDTO = userViewDTOConverter.convertToUserViewDTO(worker);
+        Page<ProposalViewDTO> propsPage = PaginationUtils.paginate(props, pageable);
+        var result = new ProposalCustomerViewDTO(new PagedModel<>(propsPage), workerDTO);
         return ResultWrapper.getResponse(result);
     }
 
-    @GetMapping("/venues/worker/{workerId}/proposal/{propId}")
+    @GetMapping("/worker/{workerId}/proposal/{propId}/venues")
     public ResponseEntity<ApiResponse<Object>> getAllVenuesByWorkerIdAndPropId(
             @PathVariable("workerId") long workerId
             , @PathVariable("propId") long propId
