@@ -25,7 +25,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
     private final OAuth2AuthorizedClientService authorizedClientService;
-    private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
 
     public CustomAuthenticationSuccessHandler(UserRepository userRepository, JwtUtil jwtUtil, OAuth2AuthorizedClientService authorizedClientService) {
         this.userRepository = userRepository;
@@ -74,9 +73,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             user.setOauth2RefreshToken(refreshToken);
             userRepository.save(user);
         }
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/"; //home
-
         String jwtToken = jwtUtil.generateToken(email);
         String jwtRefreshToken = jwtUtil.generateRefreshToken(email);
         response.setContentType("application/json");
@@ -84,6 +80,5 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.setHeader("Authorization", "Bearer " + jwtToken);
         response.getWriter().write("{\"accessToken\": \"" + jwtToken + "\", \"refreshToken\": \"" + jwtRefreshToken + "\"}");
         response.getWriter().flush();
-        response.sendRedirect(targetUrl);
     }
 }
