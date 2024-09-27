@@ -21,11 +21,9 @@ public class ProposalViewDTOConverter {
         proposalViewDTO.setId(proposal.getId());
         proposalViewDTO.setName(proposal.getName());
         proposalViewDTO.setDescription(proposal.getDescription());
-        proposalViewDTO.setDuration(proposal.getDurationMin());
         proposalViewDTO.setVenues(venueViewDTOConverter.convertToViewDTO(proposal.getVenues()));
+        proposalViewDTO.setPricePacks(proposal.getPricePacks());
         proposalViewDTO.setOnline(proposal.isOnline());
-        proposalViewDTO.setPrice(proposal.getPrice());
-        proposalViewDTO.setCurrency(proposal.getCurrency());
         return proposalViewDTO;
     }
 
@@ -42,10 +40,7 @@ public class ProposalViewDTOConverter {
         proposalAppointmentViewDTO.setId(proposal.getId());
         proposalAppointmentViewDTO.setName(proposal.getName());
         proposalAppointmentViewDTO.setDescription(proposal.getDescription());
-        proposalAppointmentViewDTO.setDuration(proposal.getDurationMin());
         proposalAppointmentViewDTO.setOnline(proposal.isOnline());
-        proposalAppointmentViewDTO.setPrice(proposal.getPrice());
-        proposalAppointmentViewDTO.setCurrency(proposal.getCurrency());
         return proposalAppointmentViewDTO;
     }
 }

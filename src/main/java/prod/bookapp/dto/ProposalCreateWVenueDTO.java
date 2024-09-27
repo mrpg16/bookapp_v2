@@ -15,9 +15,7 @@ import java.util.List;
 public class ProposalCreateWVenueDTO implements ProposalDTO {
     private String name;
     private String description;
-    private int duration;
     private List<VenueCreateDTO> venues;
     private boolean online;
-    private Double price;
-    private String currency;
+    private List<PricePackCreateDTO> pricePacks;
 }

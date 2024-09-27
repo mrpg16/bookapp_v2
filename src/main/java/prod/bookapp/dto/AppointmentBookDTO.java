@@ -16,6 +16,7 @@ public class AppointmentBookDTO {
     private Long workerId;
     private Long proposalId;
     private Long venueId;
+    private Long pricePackId;
     private LocalDate date;
     private LocalTime time;
 }

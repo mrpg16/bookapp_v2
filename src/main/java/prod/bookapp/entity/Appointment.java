@@ -33,5 +33,8 @@ public class Appointment {
     private LocalTime timeStart;
     private LocalTime timeEnd;
     private int durationMin;
+    private double price;
+    private String currency;
     private String status;
+    private Long pricePackId;
 }

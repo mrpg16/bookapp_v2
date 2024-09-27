@@ -8,6 +8,7 @@ import prod.bookapp.dto.converter.ProposalViewDTOConverter;
 import prod.bookapp.dto.converter.VenueViewDTOConverter;
 import prod.bookapp.dto.interfaces.ProposalDTO;
 import prod.bookapp.dto.interfaces.VenueDTO;
+import prod.bookapp.entity.PricePack;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.Venue;
@@ -45,20 +46,26 @@ public class ProposalService {
         if (proposalDTO.getName() == null || proposalDTO.getName().isEmpty()) {
             return "Error: Name cannot be empty";
         }
-        if (proposalDTO.getDuration() <= 0) {
-            return "Error: Duration cannot be <= 0";
+        var pricePacksDto = proposalDTO.getPricePacks();
+        if (pricePacksDto == null || pricePacksDto.isEmpty()) {
+            return "Error: Price Packs cannot be empty";
         }
-        var price = proposalDTO.getPrice();
-        var cur = proposalDTO.getCurrency();
+        for (var pricePack : pricePacksDto) {
+            var dur = pricePack.getDuration();
+            var price = pricePack.getPrice();
+            var cur = pricePack.getCurrency();
 
-        if (price != null && price >= 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
-            if (!Enums.getCurrencies().contains(cur)) {
-                return "Error: Invalid currency";
+            if (dur == null || dur <= 0) {
+                return "Error: Duration cannot be <= 0 or blank";
             }
-        } else {
-            return "Error: Invalid price or currency";
+            if (price != null && price >= 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
+                if (!Enums.getCurrencies().contains(cur)) {
+                    return "Error: Invalid currency";
+                }
+            } else {
+                return "Error: Invalid price or currency";
+            }
         }
-
         for (Venue v : venue) {
             if (proposalDTO.isOnline() != v.isOnline()) {
                 return "Error: Venue type mismatch";
@@ -81,18 +88,25 @@ public class ProposalService {
         if (proposalDTO.getName() == null || proposalDTO.getName().isEmpty()) {
             return "Error: Name cannot be empty";
         }
-        if (proposalDTO.getDuration() <= 0) {
-            return "Error: Duration cannot be <= 0";
+        var pricePacksDto = proposalDTO.getPricePacks();
+        if (pricePacksDto == null || pricePacksDto.isEmpty()) {
+            return "Error: Price Packs cannot be empty";
         }
-        var price = proposalDTO.getPrice();
-        var cur = proposalDTO.getCurrency();
+        for (var pricePack : pricePacksDto) {
+            var dur = pricePack.getDuration();
+            var price = pricePack.getPrice();
+            var cur = pricePack.getCurrency();
 
-        if (price != null && price > 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
-            if (!Enums.getCurrencies().contains(cur)) {
-                return "Error: Invalid currency";
+            if (dur == null || dur <= 0) {
+                return "Error: Duration cannot be <= 0 or blank";
             }
-        } else {
-            return "Error: Invalid price or currency";
+            if (price != null && price >= 0 && !price.isInfinite() && !price.isNaN() && cur != null) {
+                if (!Enums.getCurrencies().contains(cur)) {
+                    return "Error: Invalid currency";
+                }
+            } else {
+                return "Error: Invalid price or currency";
+            }
         }
         return null;
     }
@@ -119,14 +133,20 @@ public class ProposalService {
                 return validationResult;
             }
             Proposal proposal = new Proposal();
+            List<PricePack> pricePacks = new ArrayList<>();
+            for (var pricePack : proposalCreateDTO.getPricePacks()) {
+                PricePack pp = new PricePack();
+                pp.setPrice(pricePack.getPrice());
+                pp.setCurrency(pricePack.getCurrency());
+                pp.setDuration(pricePack.getDuration());
+                pricePacks.add(pp);
+            }
             proposal.setOwner(getAuthUser(authentication));
             proposal.setName(proposalCreateDTO.getName());
             proposal.setDescription(proposalCreateDTO.getDescription());
-            proposal.setDurationMin(proposalCreateDTO.getDuration());
             proposal.setOnline(proposalCreateDTO.isOnline());
             proposal.setVenues(propVenues);
-            proposal.setPrice(proposalCreateDTO.getPrice());
-            proposal.setCurrency(proposalCreateDTO.getCurrency());
+            proposal.setPricePacks(pricePacks);
             propsToSave.add(proposal);
         }
         proposalRepository.saveAll(propsToSave);
@@ -148,14 +168,20 @@ public class ProposalService {
         }
         for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
             Proposal proposal = new Proposal();
+            List<PricePack> pricePacks = new ArrayList<>();
+            for (var pricePack : proposalCreateWVenueDTO.getPricePacks()) {
+                PricePack pp = new PricePack();
+                pp.setPrice(pricePack.getPrice());
+                pp.setCurrency(pricePack.getCurrency());
+                pp.setDuration(pricePack.getDuration());
+                pricePacks.add(pp);
+            }
             proposal.setOwner(getAuthUser(authentication));
             proposal.setName(proposalCreateWVenueDTO.getName());
             proposal.setDescription(proposalCreateWVenueDTO.getDescription());
-            proposal.setDurationMin(proposalCreateWVenueDTO.getDuration());
             proposal.setOnline(proposalCreateWVenueDTO.isOnline());
             proposal.setVenues(venueService.createWithoutValidation(proposalCreateWVenueDTO.getVenues(), authentication));
-            proposal.setPrice(proposalCreateWVenueDTO.getPrice());
-            proposal.setCurrency(proposalCreateWVenueDTO.getCurrency());
+            proposal.setPricePacks(pricePacks);
             propsToSave.add(proposal);
         }
         saveAll(propsToSave);
@@ -186,12 +212,21 @@ public class ProposalService {
         if (validationResult != null) {
             return validationResult;
         }
+        List<PricePack> pricePacks = new ArrayList<>();
+        for (var pricePack : proposalUpdateDTO.getPricePacks()) {
+            PricePack pp = new PricePack();
+            pp.setPrice(pricePack.getPrice());
+            pp.setCurrency(pricePack.getCurrency());
+            pp.setDuration(pricePack.getDuration());
+            pricePacks.add(pp);
+        }
         proposal.setOwner(owner);
         proposal.setName(proposalUpdateDTO.getName());
         proposal.setDescription(proposalUpdateDTO.getDescription());
-        proposal.setDurationMin(proposalUpdateDTO.getDuration());
         proposal.setOnline(proposalUpdateDTO.isOnline());
         proposal.setVenues(propVenues);
+        proposal.setPricePacks(pricePacks);
+
         proposalRepository.save(proposal);
         return proposal.getId().toString();
     }

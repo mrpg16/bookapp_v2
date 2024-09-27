@@ -26,12 +26,12 @@ public class Proposal {
     private User owner;
     private String name;
     private String description;
-    private int durationMin;
     private boolean online;
     @ManyToMany()
     @Fetch(FetchMode.JOIN)
     private List<Venue> venues;
     private boolean deleted = false;
-    private Double price;
-    private String currency;
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Fetch(FetchMode.JOIN)
+    private List<PricePack> pricePacks;
 }

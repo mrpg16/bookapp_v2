@@ -13,6 +13,7 @@ import prod.bookapp.enums.Enums;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Service
 public class BookingService {
@@ -34,11 +35,11 @@ public class BookingService {
         return (User) authentication.getPrincipal();
     }
 
-    public String validateBooking(LocalDate date, LocalTime timeStart, User client, Long workerId, Long proposalId, Long venueId) {
+    public String validateBooking(LocalDate date, LocalTime timeStart, User client, Long workerId, Long proposalId, Long venueId, Long pricePackId) {
         if (appointmentService.hasAppointment(date, timeStart, client)) {
             return "Error: You already have an appointment on that date and time";
         }
-        TimeSlotDTO freeSlot = timeSlotService.getFreeSlotByDateTimeAndProposalIdAndWorkerId(date, timeStart, proposalId, workerId);
+        TimeSlotDTO freeSlot = timeSlotService.getFreeSlotByDateTimeAndProposalIdAndWorkerId(date, timeStart, proposalId, workerId, pricePackId);
         if (freeSlot == null) {
             return "Error: There is no free slot";
         }
@@ -57,12 +58,14 @@ public class BookingService {
         Long workerId = bookDTO.getWorkerId();
         Long proposalId = bookDTO.getProposalId();
         Long venueId = bookDTO.getVenueId();
+        Long pricePackId = bookDTO.getPricePackId();
         User client = getAuthUser(auth);
-        var validationResult = validateBooking(date, timeStart, client, workerId, proposalId, venueId);
+        var validationResult = validateBooking(date, timeStart, client, workerId, proposalId, venueId, pricePackId);
         if (validationResult != null) {
             return validationResult;
         }
         Proposal proposal = proposalService.getProposalById(proposalId);
+        var pricePack = proposal.getPricePacks().stream().filter(p -> Objects.equals(p.getId(), pricePackId)).findFirst().orElse(null);
         Venue venue = venueService.getById(venueId);
         Appointment appointment = new Appointment();
         appointment.setWorker(userService.getUserById(workerId));
@@ -71,9 +74,14 @@ public class BookingService {
         appointment.setVenue(venue);
         appointment.setDate(date);
         appointment.setTimeStart(timeStart);
-        appointment.setTimeEnd(timeStart.plusMinutes(proposal.getDurationMin()));
-        appointment.setDurationMin(proposal.getDurationMin());
+        assert pricePack != null;
+        appointment.setTimeEnd(timeStart.plusMinutes(pricePack.getDuration()));
+        appointment.setDurationMin(pricePack.getDuration());
+        appointment.setCurrency(pricePack.getCurrency());
+        appointment.setPrice(pricePack.getPrice());
+        appointment.setPricePackId(pricePack.getId());
         appointment.setStatus(Enums.APPOINTMENT_STATUS_UNCONFIRMED.getValue());
+
         appointmentService.save(appointment);
         return appointment.getId().toString();
     }

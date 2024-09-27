@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import prod.bookapp.entity.PricePack;
 
 import java.util.List;
 
@@ -15,9 +16,7 @@ public class ProposalViewDTO {
     private Long id;
     private String name;
     private String description;
-    private int duration;
     private List<VenueViewDTO> venues;
     private boolean online;
-    private Double price;
-    private String currency;
+    private List<PricePack> pricePacks;
 }

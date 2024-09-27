@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import prod.bookapp.entity.PricePack;
 
 @Setter
 @Getter
@@ -15,6 +16,7 @@ public class AppointmentViewDTO {
     private VenueViewDTO venue;
     private UserViewDTO client;
     private String status;
+    private PricePack pricePack;
 }
 
 

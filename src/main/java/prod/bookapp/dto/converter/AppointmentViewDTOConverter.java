@@ -6,6 +6,8 @@ import prod.bookapp.dto.AppointmentViewDTO;
 import prod.bookapp.dto.AppointmentViewWorkerDTO;
 import prod.bookapp.entity.Appointment;
 
+import java.util.Objects;
+
 @Component
 public class AppointmentViewDTOConverter {
     private final UserViewDTOConverter userViewDTOConverter;
@@ -27,6 +29,9 @@ public class AppointmentViewDTOConverter {
         appointmentViewDTO.setVenue(venueViewDTOConverter.convertToViewDTO(appointment.getVenue()));
         appointmentViewDTO.setClient(userViewDTOConverter.convertToUserViewDTO(appointment.getClient()));
         appointmentViewDTO.setStatus(appointment.getStatus());
+        var ppId = appointment.getPricePackId();
+        var pp = appointment.getProposal().getPricePacks().stream().filter(p -> Objects.equals(p.getId(), ppId)).findFirst().orElse(null);
+        appointmentViewDTO.setPricePack(pp);
         return appointmentViewDTO;
     }
 
@@ -41,6 +46,9 @@ public class AppointmentViewDTOConverter {
         appointmentViewWorkerDTO.setTimeStart(appointment.getTimeStart());
         appointmentViewWorkerDTO.setTimeEnd(appointment.getTimeEnd());
         appointmentViewWorkerDTO.setDurationMin(appointment.getDurationMin());
+        var ppId = appointment.getPricePackId();
+        var pp = appointment.getProposal().getPricePacks().stream().filter(p -> Objects.equals(p.getId(), ppId)).findFirst().orElse(null);
+        appointmentViewWorkerDTO.setPricePack(pp);
         return appointmentViewWorkerDTO;
     }
 
@@ -55,6 +63,9 @@ public class AppointmentViewDTOConverter {
         appointmentViewClientDTO.setTimeStart(appointment.getTimeStart());
         appointmentViewClientDTO.setTimeEnd(appointment.getTimeEnd());
         appointmentViewClientDTO.setDurationMin(appointment.getDurationMin());
+        var ppId = appointment.getPricePackId();
+        var pp = appointment.getProposal().getPricePacks().stream().filter(p -> Objects.equals(p.getId(), ppId)).findFirst().orElse(null);
+        appointmentViewClientDTO.setPricePack(pp);
         return appointmentViewClientDTO;
     }
 }

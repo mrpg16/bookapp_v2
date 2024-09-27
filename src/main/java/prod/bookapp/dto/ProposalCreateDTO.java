@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import prod.bookapp.dto.interfaces.ProposalDTO;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -13,9 +15,7 @@ import prod.bookapp.dto.interfaces.ProposalDTO;
 public class ProposalCreateDTO implements ProposalDTO {
     private String name;
     private String description;
-    private int duration;
     private long[] venueIds;
     private boolean online;
-    private Double price;
-    private String currency;
+    private List<PricePackCreateDTO> pricePacks;
 }

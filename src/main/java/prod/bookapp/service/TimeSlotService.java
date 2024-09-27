@@ -136,36 +136,48 @@ public class TimeSlotService {
     }
 
 
-    public List<TimeSlotDTO> getAllFreeSlotsByDateAndWorkerIdAndProposalId(LocalDate date, Long workerId, Long proposalId) {
+    public List<TimeSlotDTO> getAllFreeSlotsByDateAndWorkerIdAndProposalId(LocalDate date, Long workerId, Long proposalId, Long pricePackId) {
         User worker = userService.getUserById(workerId);
         Proposal proposal = proposalService.getProposalByIdAndOwner(proposalId, worker);
         if (proposal == null) {
             return null;
         }
-        return getAllFreeSlotsByDateAndWorkerAndDuration(date, worker, proposal.getDurationMin());
+        var pricePack = proposal.getPricePacks().stream().filter(p -> Objects.equals(p.getId(), pricePackId)).findFirst().orElse(null);
+        if (pricePack == null) {
+            return null;
+        }
+        return getAllFreeSlotsByDateAndWorkerAndDuration(date, worker, pricePack.getDuration());
     }
 
-    public List<TimeSlotDTO> getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(LocalDate dateFrom, LocalDate dateTo, Long workerId, Long proposalId) {
+    public List<TimeSlotDTO> getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(LocalDate dateFrom, LocalDate dateTo, Long workerId, Long proposalId, Long pricePackId) {
         User worker = userService.getUserById(workerId);
         Proposal proposal = proposalService.getProposalByIdAndOwner(proposalId, worker);
         if (proposal == null) {
             return null;
         }
-        return getAllFreeSlotsByDateBetweenAndWorkerAndDuration(dateFrom, dateTo, worker, proposal.getDurationMin());
+        var pricePack = proposal.getPricePacks().stream().filter(p -> Objects.equals(p.getId(), pricePackId)).findFirst().orElse(null);
+        if (pricePack == null) {
+            return null;
+        }
+        return getAllFreeSlotsByDateBetweenAndWorkerAndDuration(dateFrom, dateTo, worker, pricePack.getDuration());
     }
 
-    public TimeSlotDTO getFreeSlotByDateTimeAndProposalIdAndWorkerId(LocalDate date, LocalTime timeStart, Long proposalId, Long workerId) { //validation for appointment
+    public TimeSlotDTO getFreeSlotByDateTimeAndProposalIdAndWorkerId(LocalDate date, LocalTime timeStart, Long proposalId, Long workerId, Long pricePackId) {
         User worker = userService.getUserById(workerId);
         Proposal proposal = proposalService.getProposalByIdAndOwner(proposalId, worker);
         if (proposal == null) {
             return null;
         }
-        List<TimeSlotDTO> freeSlotsByDate = getAllFreeSlotsByDateAndWorkerIdAndProposalId(date, workerId, proposalId);
+        List<TimeSlotDTO> freeSlotsByDate = getAllFreeSlotsByDateAndWorkerIdAndProposalId(date, workerId, proposalId, pricePackId);
         if (freeSlotsByDate == null) {
             return null;
         }
 
-        LocalTime timeEnd = timeStart.plusMinutes(proposal.getDurationMin());
+        var pricePack = proposal.getPricePacks().stream().filter(p -> Objects.equals(p.getId(), pricePackId)).findFirst().orElse(null);
+        if (pricePack == null) {
+            return null;
+        }
+        LocalTime timeEnd = timeStart.plusMinutes(pricePack.getDuration());
         return freeSlotsByDate.stream()
                 .filter(x -> timeStart.isAfter(x.getStartTime()) || timeStart.equals(x.getStartTime()))
                 .filter(x -> timeEnd.isBefore(x.getEndTime()) || timeEnd.equals(x.getEndTime()))

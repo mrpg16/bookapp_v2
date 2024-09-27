@@ -7,6 +7,7 @@ import prod.bookapp.dto.OnboardingCreateDTO;
 import prod.bookapp.dto.ProposalCreateWVenueDTO;
 import prod.bookapp.dto.VenueCreateDTO;
 import prod.bookapp.dto.WorkingHoursCreateDTO;
+import prod.bookapp.entity.PricePack;
 import prod.bookapp.entity.Proposal;
 import prod.bookapp.entity.User;
 import prod.bookapp.entity.WorkingHours;
@@ -46,13 +47,20 @@ public class OnboardingService {
         }
         for (ProposalCreateWVenueDTO proposalCreateWVenueDTO : proposalCreateWVenueDTOs) {
             Proposal proposal = new Proposal();
+            List<PricePack> pricePacks = new ArrayList<>();
+            for (var pricePack : proposalCreateWVenueDTO.getPricePacks()) {
+                PricePack pp = new PricePack();
+                pp.setPrice(pricePack.getPrice());
+                pp.setCurrency(pricePack.getCurrency());
+                pp.setDuration(pricePack.getDuration());
+                pricePacks.add(pp);
+            }
             proposal.setOwner(owner);
             proposal.setName(proposalCreateWVenueDTO.getName());
             proposal.setDescription(proposalCreateWVenueDTO.getDescription());
-            proposal.setDurationMin(proposalCreateWVenueDTO.getDuration());
             proposal.setOnline(proposalCreateWVenueDTO.isOnline());
             proposal.setVenues(venueService.createWithoutValidation(proposalCreateWVenueDTO.getVenues(), authentication));
-
+            proposal.setPricePacks(pricePacks);
             propsToSave.add(proposal);
         }
         var validationResult = workingHoursService.validateWH(whDTOList);

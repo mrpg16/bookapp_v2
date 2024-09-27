@@ -25,6 +25,7 @@ import prod.bookapp.wraper.ResultWrapper;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/timeslot")
@@ -69,6 +70,7 @@ public class TimeSlotController {
             @RequestParam LocalDate dateTo,
             @RequestParam Long workerId,
             @RequestParam Long proposalId,
+            @RequestParam Long pricePackId,
             Pageable pageable
     ) {
         User worker = userService.getUserById(workerId);
@@ -79,12 +81,14 @@ public class TimeSlotController {
         Page<TimeSlotDTO> paginatedSlots;
         List<TimeSlotDTO> slots;
         if (dateFrom.equals(dateTo)) {
-            slots = timeSlotService.getAllFreeSlotsByDateAndWorkerIdAndProposalId(dateFrom, workerId, proposalId);
+            slots = timeSlotService.getAllFreeSlotsByDateAndWorkerIdAndProposalId(dateFrom, workerId, proposalId, pricePackId);
         } else {
-            slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId);
+            slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId, pricePackId);
         }
         paginatedSlots = PaginationUtils.paginate(slots, pageable);
         var workerDTO = userViewDTOConverter.convertToUserViewDTO(worker);
+        var pricePacks = proposal.getPricePacks();
+        proposal.setPricePacks(pricePacks.stream().filter(p -> Objects.equals(p.getId(), pricePackId)).toList());
         var proposalDTO = proposalViewDTOConverter.convertToProposalViewDTO(proposal);
         var result = new FreeSlotsSearchDTO(new PagedModel<>(paginatedSlots), workerDTO, proposalDTO);
         return ResultWrapper.getResponse(result);
