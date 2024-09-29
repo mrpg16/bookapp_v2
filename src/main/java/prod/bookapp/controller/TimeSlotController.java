@@ -66,8 +66,8 @@ public class TimeSlotController {
 
     @GetMapping("/free")
     public ResponseEntity<ApiResponse<Object>> getFreeSlotsByDateAndWorkerAndProposal(
-            @RequestParam LocalDate dateFrom,
-            @RequestParam LocalDate dateTo,
+            @RequestParam(required = false) LocalDate dateFrom,
+            @RequestParam(required = false) LocalDate dateTo,
             @RequestParam Long workerId,
             @RequestParam Long proposalId,
             @RequestParam Long pricePackId,
@@ -80,10 +80,16 @@ public class TimeSlotController {
         }
         Page<TimeSlotDTO> paginatedSlots;
         List<TimeSlotDTO> slots;
-        if (dateFrom.equals(dateTo)) {
-            slots = timeSlotService.getAllFreeSlotsByDateAndWorkerIdAndProposalId(dateFrom, workerId, proposalId, pricePackId);
+        if (dateFrom == null || dateTo == null) {
+            var dateStart = LocalDate.now();
+            var dateEnd = dateStart.plusDays(7);
+            slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateStart, dateEnd, workerId, proposalId, pricePackId);
         } else {
-            slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId, pricePackId);
+            if (dateFrom.equals(dateTo)) {
+                slots = timeSlotService.getAllFreeSlotsByDateAndWorkerIdAndProposalId(dateFrom, workerId, proposalId, pricePackId);
+            } else {
+                slots = timeSlotService.getAllFreeSlotsByDateBetweenAndWorkerIdAndProposalId(dateFrom, dateTo, workerId, proposalId, pricePackId);
+            }
         }
         paginatedSlots = PaginationUtils.paginate(slots, pageable);
         var workerDTO = userViewDTOConverter.convertToUserViewDTO(worker);
