@@ -32,7 +32,7 @@ public class UserService {
         var email = userRegisterDTO.getEmail();
         var password = userRegisterDTO.getPassword();
         var currency = userRegisterDTO.getDefaultCurrency();
-        if (email.isEmpty() || password.isEmpty()) {
+        if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
             return "Error: Invalid email or password";
         }
         User user = userRepository.findByEmailAndProvider(email, "basic");
